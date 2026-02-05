@@ -23,6 +23,7 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private Vector3 landingBounceScale = new Vector3(1.1f, 0.9f, 1f);
     [SerializeField] private float clearBlinkDuration = 0.3f;
     [SerializeField] private float clearBlinkInterval = 0.08f;
+    [SerializeField] private PuyoClearEffect clearEffectPrefab;
 
     [Header("Input Settings")]
     [SerializeField] private KeyCode moveLeftKey = KeyCode.LeftArrow;
@@ -420,6 +421,7 @@ public class PuzzleBord : MonoBehaviour
                 continue;
             }
 
+            SpawnClearEffect(piece);
             Destroy(piece.gameObject);
             board[cell.x, cell.y] = null;
         }
@@ -550,6 +552,7 @@ public class PuzzleBord : MonoBehaviour
     {
         if (!animate || fallAnimationDuration <= 0f)
         {
+            StopMoveCoroutine(piece);
             piece.ApplyUIPosition(target);
             return;
         }
@@ -562,6 +565,7 @@ public class PuzzleBord : MonoBehaviour
     {
         if (!animate || fallAnimationDuration <= 0f)
         {
+            StopMoveCoroutine(piece);
             piece.transform.position = target;
             return;
         }
@@ -574,6 +578,7 @@ public class PuzzleBord : MonoBehaviour
     {
         if (duration <= 0f)
         {
+            StopMoveCoroutine(piece);
             piece.ApplyUIPosition(target);
             return;
         }
@@ -586,6 +591,7 @@ public class PuzzleBord : MonoBehaviour
     {
         if (duration <= 0f)
         {
+            StopMoveCoroutine(piece);
             piece.transform.position = target;
             return;
         }
@@ -603,6 +609,21 @@ public class PuzzleBord : MonoBehaviour
 
         Coroutine routine = StartCoroutine(MovePieceRoutine(piece, start, target, isUI, duration, bounce));
         moveCoroutines[piece] = routine;
+    }
+
+    private void StopMoveCoroutine(Piece piece)
+    {
+        if (piece == null)
+        {
+            return;
+        }
+
+        if (moveCoroutines.TryGetValue(piece, out Coroutine existing) && existing != null)
+        {
+            StopCoroutine(existing);
+        }
+
+        moveCoroutines.Remove(piece);
     }
 
     private System.Collections.IEnumerator MovePieceRoutine(Piece piece, Vector3 start, Vector3 target, bool isUI, float duration, bool bounce)
@@ -717,6 +738,26 @@ public class PuzzleBord : MonoBehaviour
             {
                 piece.transform.localScale = baseScale;
             }
+        }
+    }
+
+    private void SpawnClearEffect(Piece piece)
+    {
+        if (clearEffectPrefab == null || piece == null)
+        {
+            return;
+        }
+
+        Transform parent = piece.transform.parent;
+        PuyoClearEffect effect = Instantiate(clearEffectPrefab, parent, false);
+
+        if (piece.IsUI && piece.RectTransform != null)
+        {
+            effect.PlayUI(piece.RectTransform, uiCellSize);
+        }
+        else
+        {
+            effect.PlayWorld(piece.transform.position);
         }
     }
 
