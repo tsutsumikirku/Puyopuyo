@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PuzzleBord : MonoBehaviour
 {
@@ -9,6 +10,7 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float spacing = 1.1f;
     [SerializeField] private Vector2 origin = Vector2.zero;
     [SerializeField] private Vector2 uiCellSize = new Vector2(64f, 64f);
+    [SerializeField] private bool centerBoardOnTransform = true;
 
     [Header("Piece Settings")]
     [SerializeField] private Piece piecePrefab;
@@ -26,6 +28,11 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float clearBlinkInterval = 0.08f;
     [SerializeField] private PuyoClearEffect clearEffectPrefab;
 
+    [Header("Frame Settings")]
+    [SerializeField] private Sprite frameSprite;
+    [SerializeField] private Color frameColor = Color.white;
+    [SerializeField] private bool showFrameTiles = true;
+
     [Header("Input Settings")]
     [SerializeField] private KeyCode moveLeftKey = KeyCode.LeftArrow;
     [SerializeField] private KeyCode moveRightKey = KeyCode.RightArrow;
@@ -41,6 +48,7 @@ public class PuzzleBord : MonoBehaviour
     private bool isResolving;
     private readonly Dictionary<Piece, Coroutine> moveCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly Dictionary<Piece, Coroutine> bounceCoroutines = new Dictionary<Piece, Coroutine>();
+    private readonly List<GameObject> frameTiles = new List<GameObject>();
 
     private void Start()
     {
@@ -80,9 +88,15 @@ public class PuzzleBord : MonoBehaviour
             return;
         }
 
+        if (centerBoardOnTransform)
+        {
+            AlignOriginToCenter();
+        }
+
         board = new Piece[width, height];
         fallTimer = 0f;
         gameOver = false;
+        BuildFrameTiles();
         SpawnPair();
     }
 
@@ -138,6 +152,8 @@ public class PuzzleBord : MonoBehaviour
 
     private void ClearBoard()
     {
+        ClearFrameTiles();
+
         if (board != null)
         {
             for (int x = 0; x < board.GetLength(0); x++)
@@ -189,6 +205,8 @@ public class PuzzleBord : MonoBehaviour
             PivotPiece = pivotPiece,
             ChildPiece = childPiece
         };
+
+        RefreshAllSprites();
     }
 
     private Piece CreatePiece(Vector2Int gridPosition, PieceType type)
@@ -227,6 +245,74 @@ public class PuzzleBord : MonoBehaviour
         }
     }
 
+    private void BuildFrameTiles()
+    {
+        ClearFrameTiles();
+
+        if (!showFrameTiles || frameSprite == null)
+        {
+            return;
+        }
+
+        bool useUI = UseUIGrid();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                Vector2Int gridPosition = new Vector2Int(x, y);
+                GameObject tile = useUI ? CreateFrameTileUI(gridPosition) : CreateFrameTileWorld(gridPosition);
+                if (tile != null)
+                {
+                    frameTiles.Add(tile);
+                }
+            }
+        }
+    }
+
+    private GameObject CreateFrameTileUI(Vector2Int gridPosition)
+    {
+        GameObject tile = new GameObject($"FrameTile_{gridPosition.x}_{gridPosition.y}", typeof(RectTransform), typeof(Image));
+        tile.transform.SetParent(transform, false);
+
+        Image image = tile.GetComponent<Image>();
+        image.sprite = frameSprite;
+        image.color = frameColor;
+        image.preserveAspect = true;
+
+        RectTransform rectTransform = tile.GetComponent<RectTransform>();
+        rectTransform.localScale = Vector3.one;
+        rectTransform.sizeDelta = uiCellSize;
+        rectTransform.anchoredPosition = GridToUI(gridPosition);
+        tile.transform.SetAsFirstSibling();
+        return tile;
+    }
+
+    private GameObject CreateFrameTileWorld(Vector2Int gridPosition)
+    {
+        GameObject tile = new GameObject($"FrameTile_{gridPosition.x}_{gridPosition.y}", typeof(SpriteRenderer));
+        tile.transform.SetParent(transform, false);
+
+        SpriteRenderer renderer = tile.GetComponent<SpriteRenderer>();
+        renderer.sprite = frameSprite;
+        renderer.color = frameColor;
+        renderer.sortingOrder = -1;
+        tile.transform.position = GridToWorld(gridPosition);
+        return tile;
+    }
+
+    private void ClearFrameTiles()
+    {
+        for (int i = 0; i < frameTiles.Count; i++)
+        {
+            if (frameTiles[i] != null)
+            {
+                DestroyImmediate(frameTiles[i]);
+            }
+        }
+
+        frameTiles.Clear();
+    }
+
     private void ApplyGridPosition(Piece piece, Vector2Int gridPosition, float duration, bool bounce)
     {
         if (piece == null)
@@ -257,6 +343,7 @@ public class PuzzleBord : MonoBehaviour
 
         activePair.Pivot = newPivot;
         UpdateActiveWorldPositions();
+        RefreshAllSprites();
         return true;
     }
 
@@ -283,6 +370,7 @@ public class PuzzleBord : MonoBehaviour
                 activePair.Pivot = newPivot;
                 activePair.Offset = rotatedOffset;
                 AnimateActivePositions(rotateAnimationDuration);
+                RefreshAllSprites();
                 return;
             }
         }
@@ -296,6 +384,7 @@ public class PuzzleBord : MonoBehaviour
                 activePair.Pivot = swappedPivot;
                 activePair.Offset = -activePair.Offset;
                 AnimateActivePositions(rotateAnimationDuration);
+                RefreshAllSprites();
             }
         }
     }
@@ -347,6 +436,7 @@ public class PuzzleBord : MonoBehaviour
         board[childPosition.x, childPosition.y] = childPiece;
         activePair = default;
 
+        RefreshAllSprites();
         StartBounceCoroutine(pivotPiece, pivotPiece != null && pivotPiece.IsUI);
         StartBounceCoroutine(childPiece, childPiece != null && childPiece.IsUI);
         StartCoroutine(ResolveAfterLockRoutine());
@@ -426,6 +516,8 @@ public class PuzzleBord : MonoBehaviour
             Destroy(piece.gameObject);
             board[cell.x, cell.y] = null;
         }
+
+        RefreshAllSprites();
     }
 
     private System.Collections.IEnumerator BlinkMatches(List<Vector2Int> matches)
@@ -544,6 +636,11 @@ public class PuzzleBord : MonoBehaviour
 
                 writeRow++;
             }
+        }
+
+        if (moved)
+        {
+            RefreshAllSprites();
         }
 
         return moved;
@@ -764,6 +861,136 @@ public class PuzzleBord : MonoBehaviour
         else
         {
             effect.PlayWorld(piece.transform.position);
+        }
+    }
+
+    private void RefreshAllSprites()
+    {
+        if (spriteSet == null || board == null)
+        {
+            return;
+        }
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                Piece piece = board[x, y];
+                if (piece == null)
+                {
+                    continue;
+                }
+
+                UpdatePieceSprite(piece, new Vector2Int(x, y));
+            }
+        }
+
+        if (activePair.PivotPiece != null)
+        {
+            UpdatePieceSprite(activePair.PivotPiece, activePair.Pivot);
+        }
+
+        if (activePair.ChildPiece != null)
+        {
+            UpdatePieceSprite(activePair.ChildPiece, activePair.Pivot + activePair.Offset);
+        }
+    }
+
+    private void UpdatePieceSprite(Piece piece, Vector2Int gridPosition)
+    {
+        if (piece == null || spriteSet == null)
+        {
+            return;
+        }
+
+        PuyoConnectionMask connections = GetConnections(gridPosition, piece.Type);
+        piece.ApplySprite(spriteSet.GetSprite(piece.Type, connections));
+    }
+
+    private PuyoConnectionMask GetConnections(Vector2Int gridPosition, PieceType type)
+    {
+        PuyoConnectionMask connections = PuyoConnectionMask.None;
+        if (IsSameTypeAt(gridPosition + Vector2Int.up, type))
+        {
+            connections |= PuyoConnectionMask.Up;
+        }
+
+        if (IsSameTypeAt(gridPosition + Vector2Int.down, type))
+        {
+            connections |= PuyoConnectionMask.Down;
+        }
+
+        if (IsSameTypeAt(gridPosition + Vector2Int.left, type))
+        {
+            connections |= PuyoConnectionMask.Left;
+        }
+
+        if (IsSameTypeAt(gridPosition + Vector2Int.right, type))
+        {
+            connections |= PuyoConnectionMask.Right;
+        }
+
+        return connections;
+    }
+
+    private bool IsSameTypeAt(Vector2Int gridPosition, PieceType type)
+    {
+        Piece piece = GetPieceAt(gridPosition);
+        return piece != null && piece.Type == type;
+    }
+
+    private Piece GetPieceAt(Vector2Int gridPosition)
+    {
+        if (gridPosition.x < 0 || gridPosition.x >= width || gridPosition.y < 0 || gridPosition.y >= height)
+        {
+            return null;
+        }
+
+        if (activePair.PivotPiece != null && gridPosition == activePair.Pivot)
+        {
+            return activePair.PivotPiece;
+        }
+
+        if (activePair.ChildPiece != null && gridPosition == activePair.Pivot + activePair.Offset)
+        {
+            return activePair.ChildPiece;
+        }
+
+        return board != null ? board[gridPosition.x, gridPosition.y] : null;
+    }
+
+    private void AlignOriginToCenter()
+    {
+        Vector2 cellSize = UseUIGrid() ? uiCellSize : new Vector2(spacing, spacing);
+        Vector2 center = GetBoardCenterPosition();
+        origin = center - new Vector2((width - 1) * cellSize.x * 0.5f, (height - 1) * cellSize.y * 0.5f);
+    }
+
+    private Vector2 GetBoardCenterPosition()
+    {
+        if (UseUIGrid() && TryGetComponent(out RectTransform rectTransform))
+        {
+            return rectTransform.anchoredPosition;
+        }
+
+        return transform.position;
+    }
+
+    private bool UseUIGrid()
+    {
+        if (piecePrefab == null)
+        {
+            return false;
+        }
+
+        return piecePrefab.IsUI || piecePrefab.GetComponent<RectTransform>() != null;
+    }
+
+    private void OnValidate()
+    {
+        if (centerBoardOnTransform)
+        {
+            AlignOriginToCenter();
         }
     }
 

@@ -475,8 +475,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_AnchoredPosition: {x: -16, y: -0.000016212}
+  m_SizeDelta: {x: 1160.98, y: 998.8365}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1210165015
 MonoBehaviour:
@@ -493,8 +493,9 @@ MonoBehaviour:
   width: 6
   height: 12
   spacing: 1.1
-  origin: {x: 0, y: 0}
+  origin: {x: -176, y: -352.00003}
   uiCellSize: {x: 64, y: 64}
+  centerBoardOnTransform: 1
   piecePrefab: {fileID: 2490409042072829713, guid: 97c8af20d0b8bc94eb96c5876031f164, type: 3}
   spriteSet: {fileID: 11400000, guid: 914d1b06ec64de44d978a860382587d6, type: 2}
   clearEffectSpriteSet: {fileID: 11400000, guid: 7d4474f13ff5efa4f814b15be44b5ed9, type: 2}
@@ -507,6 +508,9 @@ MonoBehaviour:
   clearBlinkDuration: 0.3
   clearBlinkInterval: 0.08
   clearEffectPrefab: {fileID: 7245309023116421309, guid: f10dd85c6e67fca4091ae3f960893e7a, type: 3}
+  frameSprite: {fileID: -263907133, guid: 03f6fe9c94294d34d90ca5900548820a, type: 3}
+  frameColor: {r: 1, g: 1, b: 1, a: 1}
+  showFrameTiles: 1
   moveLeftKey: 276
   moveRightKey: 275
   softDropKey: 274
