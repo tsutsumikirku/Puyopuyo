@@ -21,6 +21,7 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float fallInterval = 0.8f;
     [SerializeField] private float softDropInterval = 0.05f;
     [SerializeField] private float fallAnimationDuration = 0.15f;
+    [SerializeField] private float lateralMoveAnimationDuration = 0.08f;
     [SerializeField] private float rotateAnimationDuration = 0.08f;
     [SerializeField] private float landingBounceDuration = 0.12f;
     [SerializeField] private Vector3 landingBounceScale = new Vector3(1.1f, 0.9f, 1f);
@@ -348,10 +349,10 @@ public class PuzzleBord : MonoBehaviour
 
         activePair.Pivot = newPivot;
         bool shouldAnimate = animationDuration > 0f;
-        if (!shouldAnimate && delta.y == 0 && rotateAnimationDuration > 0f)
+        if (!shouldAnimate && delta.y == 0 && lateralMoveAnimationDuration > 0f)
         {
             shouldAnimate = true;
-            animationDuration = rotateAnimationDuration;
+            animationDuration = lateralMoveAnimationDuration;
         }
 
         if (shouldAnimate)
