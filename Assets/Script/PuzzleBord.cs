@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PuzzleBord : MonoBehaviour
 {
@@ -27,6 +28,11 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float clearBlinkInterval = 0.08f;
     [SerializeField] private PuyoClearEffect clearEffectPrefab;
 
+    [Header("Frame Settings")]
+    [SerializeField] private Sprite frameSprite;
+    [SerializeField] private Color frameColor = Color.white;
+    [SerializeField] private bool showFrameTiles = true;
+
     [Header("Input Settings")]
     [SerializeField] private KeyCode moveLeftKey = KeyCode.LeftArrow;
     [SerializeField] private KeyCode moveRightKey = KeyCode.RightArrow;
@@ -42,6 +48,7 @@ public class PuzzleBord : MonoBehaviour
     private bool isResolving;
     private readonly Dictionary<Piece, Coroutine> moveCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly Dictionary<Piece, Coroutine> bounceCoroutines = new Dictionary<Piece, Coroutine>();
+    private readonly List<GameObject> frameTiles = new List<GameObject>();
 
     private void Start()
     {
@@ -89,6 +96,7 @@ public class PuzzleBord : MonoBehaviour
         board = new Piece[width, height];
         fallTimer = 0f;
         gameOver = false;
+        BuildFrameTiles();
         SpawnPair();
     }
 
@@ -144,6 +152,8 @@ public class PuzzleBord : MonoBehaviour
 
     private void ClearBoard()
     {
+        ClearFrameTiles();
+
         if (board != null)
         {
             for (int x = 0; x < board.GetLength(0); x++)
@@ -233,6 +243,74 @@ public class PuzzleBord : MonoBehaviour
         {
             ApplyWorldPosition(piece, GridToWorld(gridPosition), animate);
         }
+    }
+
+    private void BuildFrameTiles()
+    {
+        ClearFrameTiles();
+
+        if (!showFrameTiles || frameSprite == null)
+        {
+            return;
+        }
+
+        bool useUI = UseUIGrid();
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                Vector2Int gridPosition = new Vector2Int(x, y);
+                GameObject tile = useUI ? CreateFrameTileUI(gridPosition) : CreateFrameTileWorld(gridPosition);
+                if (tile != null)
+                {
+                    frameTiles.Add(tile);
+                }
+            }
+        }
+    }
+
+    private GameObject CreateFrameTileUI(Vector2Int gridPosition)
+    {
+        GameObject tile = new GameObject($"FrameTile_{gridPosition.x}_{gridPosition.y}", typeof(RectTransform), typeof(Image));
+        tile.transform.SetParent(transform, false);
+
+        Image image = tile.GetComponent<Image>();
+        image.sprite = frameSprite;
+        image.color = frameColor;
+        image.preserveAspect = true;
+
+        RectTransform rectTransform = tile.GetComponent<RectTransform>();
+        rectTransform.localScale = Vector3.one;
+        rectTransform.sizeDelta = uiCellSize;
+        rectTransform.anchoredPosition = GridToUI(gridPosition);
+        tile.transform.SetAsFirstSibling();
+        return tile;
+    }
+
+    private GameObject CreateFrameTileWorld(Vector2Int gridPosition)
+    {
+        GameObject tile = new GameObject($"FrameTile_{gridPosition.x}_{gridPosition.y}", typeof(SpriteRenderer));
+        tile.transform.SetParent(transform, false);
+
+        SpriteRenderer renderer = tile.GetComponent<SpriteRenderer>();
+        renderer.sprite = frameSprite;
+        renderer.color = frameColor;
+        renderer.sortingOrder = -1;
+        tile.transform.position = GridToWorld(gridPosition);
+        return tile;
+    }
+
+    private void ClearFrameTiles()
+    {
+        for (int i = 0; i < frameTiles.Count; i++)
+        {
+            if (frameTiles[i] != null)
+            {
+                DestroyImmediate(frameTiles[i]);
+            }
+        }
+
+        frameTiles.Clear();
     }
 
     private void ApplyGridPosition(Piece piece, Vector2Int gridPosition, float duration, bool bounce)
