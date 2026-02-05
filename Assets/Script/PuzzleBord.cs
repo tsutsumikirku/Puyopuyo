@@ -347,7 +347,14 @@ public class PuzzleBord : MonoBehaviour
         }
 
         activePair.Pivot = newPivot;
-        if (animationDuration > 0f)
+        bool shouldAnimate = animationDuration > 0f;
+        if (!shouldAnimate && delta.y == 0 && rotateAnimationDuration > 0f)
+        {
+            shouldAnimate = true;
+            animationDuration = rotateAnimationDuration;
+        }
+
+        if (shouldAnimate)
         {
             ApplyGridPosition(activePair.PivotPiece, activePair.Pivot, animationDuration, false);
             ApplyGridPosition(activePair.ChildPiece, activePair.Pivot + activePair.Offset, animationDuration, false);
