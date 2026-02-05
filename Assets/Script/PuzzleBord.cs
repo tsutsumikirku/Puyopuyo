@@ -21,6 +21,7 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float fallInterval = 0.8f;
     [SerializeField] private float softDropInterval = 0.05f;
     [SerializeField] private float fallAnimationDuration = 0.15f;
+    [SerializeField] private float lateralMoveAnimationDuration = 0.08f;
     [SerializeField] private float rotateAnimationDuration = 0.08f;
     [SerializeField] private float landingBounceDuration = 0.12f;
     [SerializeField] private Vector3 landingBounceScale = new Vector3(1.1f, 0.9f, 1f);
@@ -144,7 +145,7 @@ public class PuzzleBord : MonoBehaviour
         }
 
         fallTimer = 0f;
-        if (!TryMoveActive(Vector2Int.down))
+        if (!TryMoveActive(Vector2Int.down, fallAnimationDuration))
         {
             LockActivePair();
         }
@@ -333,6 +334,11 @@ public class PuzzleBord : MonoBehaviour
 
     private bool TryMoveActive(Vector2Int delta)
     {
+        return TryMoveActive(delta, 0f);
+    }
+
+    private bool TryMoveActive(Vector2Int delta, float animationDuration)
+    {
         Vector2Int newPivot = activePair.Pivot + delta;
         Vector2Int newChild = activePair.Pivot + activePair.Offset + delta;
 
@@ -342,7 +348,22 @@ public class PuzzleBord : MonoBehaviour
         }
 
         activePair.Pivot = newPivot;
-        UpdateActiveWorldPositions();
+        bool shouldAnimate = animationDuration > 0f;
+        if (!shouldAnimate && delta.y == 0 && lateralMoveAnimationDuration > 0f)
+        {
+            shouldAnimate = true;
+            animationDuration = lateralMoveAnimationDuration;
+        }
+
+        if (shouldAnimate)
+        {
+            ApplyGridPosition(activePair.PivotPiece, activePair.Pivot, animationDuration, false);
+            ApplyGridPosition(activePair.ChildPiece, activePair.Pivot + activePair.Offset, animationDuration, false);
+        }
+        else
+        {
+            UpdateActiveWorldPositions();
+        }
         RefreshAllSprites();
         return true;
     }
