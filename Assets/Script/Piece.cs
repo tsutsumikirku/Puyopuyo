@@ -50,6 +50,23 @@ public class Piece : MonoBehaviour, IDragHandler, IBeginDragHandler, IEndDragHan
         }
     }
 
+    public void SetAlpha(float alpha)
+    {
+        if (spriteRenderer != null)
+        {
+            Color color = spriteRenderer.color;
+            color.a = alpha;
+            spriteRenderer.color = color;
+        }
+
+        if (uiImage != null)
+        {
+            Color color = uiImage.color;
+            color.a = alpha;
+            uiImage.color = color;
+        }
+    }
+
     public void ApplyUISize(Vector2 size)
     {
         if (rectTransform != null)

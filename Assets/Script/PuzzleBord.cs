@@ -18,6 +18,11 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float fallInterval = 0.8f;
     [SerializeField] private float softDropInterval = 0.05f;
     [SerializeField] private float fallAnimationDuration = 0.15f;
+    [SerializeField] private float rotateAnimationDuration = 0.08f;
+    [SerializeField] private float landingBounceDuration = 0.12f;
+    [SerializeField] private Vector3 landingBounceScale = new Vector3(1.1f, 0.9f, 1f);
+    [SerializeField] private float clearBlinkDuration = 0.3f;
+    [SerializeField] private float clearBlinkInterval = 0.08f;
 
     [Header("Input Settings")]
     [SerializeField] private KeyCode moveLeftKey = KeyCode.LeftArrow;
@@ -31,7 +36,9 @@ public class PuzzleBord : MonoBehaviour
     private ActivePair activePair;
     private float fallTimer;
     private bool gameOver;
+    private bool isResolving;
     private readonly Dictionary<Piece, Coroutine> moveCoroutines = new Dictionary<Piece, Coroutine>();
+    private readonly Dictionary<Piece, Coroutine> bounceCoroutines = new Dictionary<Piece, Coroutine>();
 
     private void Start()
     {
@@ -40,7 +47,7 @@ public class PuzzleBord : MonoBehaviour
 
     private void Update()
     {
-        if (gameOver || activePair.PivotPiece == null)
+        if (gameOver || isResolving || activePair.PivotPiece == null)
         {
             return;
         }
@@ -218,6 +225,24 @@ public class PuzzleBord : MonoBehaviour
         }
     }
 
+    private void ApplyGridPosition(Piece piece, Vector2Int gridPosition, float duration, bool bounce)
+    {
+        if (piece == null)
+        {
+            return;
+        }
+
+        if (piece.IsUI)
+        {
+            piece.ApplyUISize(uiCellSize);
+            ApplyUIPosition(piece, GridToUI(gridPosition), duration, bounce);
+        }
+        else
+        {
+            ApplyWorldPosition(piece, GridToWorld(gridPosition), duration, bounce);
+        }
+    }
+
     private bool TryMoveActive(Vector2Int delta)
     {
         Vector2Int newPivot = activePair.Pivot + delta;
@@ -255,8 +280,20 @@ public class PuzzleBord : MonoBehaviour
             {
                 activePair.Pivot = newPivot;
                 activePair.Offset = rotatedOffset;
-                UpdateActiveWorldPositions();
+                AnimateActivePositions(rotateAnimationDuration);
                 return;
+            }
+        }
+
+        if (activePair.Offset == Vector2Int.up || activePair.Offset == Vector2Int.down)
+        {
+            Vector2Int swappedPivot = activePair.Pivot + activePair.Offset;
+            Vector2Int swappedChild = swappedPivot - activePair.Offset;
+            if (IsPositionValid(swappedPivot, swappedChild))
+            {
+                activePair.Pivot = swappedPivot;
+                activePair.Offset = -activePair.Offset;
+                AnimateActivePositions(rotateAnimationDuration);
             }
         }
     }
@@ -287,37 +324,71 @@ public class PuzzleBord : MonoBehaviour
         ApplyGridPosition(activePair.ChildPiece, activePair.Pivot + activePair.Offset, false);
     }
 
+    private void AnimateActivePositions(float duration)
+    {
+        if (activePair.PivotPiece == null || activePair.ChildPiece == null)
+        {
+            return;
+        }
+
+        ApplyGridPosition(activePair.PivotPiece, activePair.Pivot, duration, false);
+        ApplyGridPosition(activePair.ChildPiece, activePair.Pivot + activePair.Offset, duration, false);
+    }
+
     private void LockActivePair()
     {
         Vector2Int pivotPosition = activePair.Pivot;
         Vector2Int childPosition = activePair.Pivot + activePair.Offset;
-        board[pivotPosition.x, pivotPosition.y] = activePair.PivotPiece;
-        board[childPosition.x, childPosition.y] = activePair.ChildPiece;
+        Piece pivotPiece = activePair.PivotPiece;
+        Piece childPiece = activePair.ChildPiece;
+        board[pivotPosition.x, pivotPosition.y] = pivotPiece;
+        board[childPosition.x, childPosition.y] = childPiece;
         activePair = default;
 
-        ApplyGravity();
-        ResolveBoard();
+        StartBounceCoroutine(pivotPiece, pivotPiece != null && pivotPiece.IsUI);
+        StartBounceCoroutine(childPiece, childPiece != null && childPiece.IsUI);
+        StartCoroutine(ResolveAfterLockRoutine());
+    }
+
+    private System.Collections.IEnumerator ResolveAfterLockRoutine()
+    {
+        isResolving = true;
+
+        bool moved = CollapseBoard(true);
+        if (moved)
+        {
+            yield return new WaitForSeconds(fallAnimationDuration);
+        }
+
+        while (true)
+        {
+            List<List<Vector2Int>> groups = FindMatchGroups();
+            if (groups.Count == 0)
+            {
+                break;
+            }
+
+            foreach (List<Vector2Int> group in groups)
+            {
+                yield return StartCoroutine(BlinkMatches(group));
+                ClearMatches(group);
+            }
+
+            bool collapsed = CollapseBoard(true);
+            if (collapsed)
+            {
+                yield return new WaitForSeconds(fallAnimationDuration);
+            }
+        }
+
+        isResolving = false;
         SpawnPair();
     }
 
-    private void ResolveBoard()
-    {
-        bool cleared;
-        do
-        {
-            cleared = ClearMatches();
-            if (cleared)
-            {
-                CollapseBoard(true);
-            }
-        } while (cleared);
-    }
-
-    private bool ClearMatches()
+    private List<List<Vector2Int>> FindMatchGroups()
     {
         bool[,] visited = new bool[width, height];
-        bool[,] toClear = new bool[width, height];
-        bool anyCleared = false;
+        List<List<Vector2Int>> groups = new List<List<Vector2Int>>();
 
         for (int x = 0; x < width; x++)
         {
@@ -331,33 +402,67 @@ public class PuzzleBord : MonoBehaviour
                 List<Vector2Int> group = FloodFillGroup(new Vector2Int(x, y), visited);
                 if (group.Count >= 4)
                 {
-                    anyCleared = true;
-                    foreach (Vector2Int cell in group)
-                    {
-                        toClear[cell.x, cell.y] = true;
-                    }
+                    groups.Add(group);
                 }
             }
         }
 
-        if (!anyCleared)
-        {
-            return false;
-        }
+        return groups;
+    }
 
-        for (int x = 0; x < width; x++)
+    private void ClearMatches(List<Vector2Int> matches)
+    {
+        foreach (Vector2Int cell in matches)
         {
-            for (int y = 0; y < height; y++)
+            Piece piece = board[cell.x, cell.y];
+            if (piece == null)
             {
-                if (toClear[x, y])
-                {
-                    Destroy(board[x, y].gameObject);
-                    board[x, y] = null;
-                }
+                continue;
+            }
+
+            Destroy(piece.gameObject);
+            board[cell.x, cell.y] = null;
+        }
+    }
+
+    private System.Collections.IEnumerator BlinkMatches(List<Vector2Int> matches)
+    {
+        HashSet<Piece> pieces = new HashSet<Piece>();
+        foreach (Vector2Int cell in matches)
+        {
+            Piece piece = board[cell.x, cell.y];
+            if (piece != null)
+            {
+                pieces.Add(piece);
             }
         }
 
-        return true;
+        float elapsed = 0f;
+        bool visible = true;
+        float interval = Mathf.Max(0.01f, clearBlinkInterval);
+        while (elapsed < clearBlinkDuration)
+        {
+            visible = !visible;
+            float alpha = visible ? 1f : 0.2f;
+            foreach (Piece piece in pieces)
+            {
+                if (piece != null)
+                {
+                    piece.SetAlpha(alpha);
+                }
+            }
+
+            elapsed += interval;
+            yield return new WaitForSeconds(interval);
+        }
+
+        foreach (Piece piece in pieces)
+        {
+            if (piece != null)
+            {
+                piece.SetAlpha(1f);
+            }
+        }
     }
 
     private List<Vector2Int> FloodFillGroup(Vector2Int start, bool[,] visited)
@@ -441,11 +546,6 @@ public class PuzzleBord : MonoBehaviour
         return moved;
     }
 
-    private void ApplyGravity()
-    {
-        CollapseBoard(true);
-    }
-
     private void ApplyUIPosition(Piece piece, Vector2 target, bool animate)
     {
         if (!animate || fallAnimationDuration <= 0f)
@@ -455,7 +555,7 @@ public class PuzzleBord : MonoBehaviour
         }
 
         Vector2 start = piece.RectTransform != null ? piece.RectTransform.anchoredPosition : target;
-        StartMoveCoroutine(piece, start, target, true);
+        StartMoveCoroutine(piece, start, target, true, fallAnimationDuration, true);
     }
 
     private void ApplyWorldPosition(Piece piece, Vector3 target, bool animate)
@@ -467,33 +567,57 @@ public class PuzzleBord : MonoBehaviour
         }
 
         Vector3 start = piece.transform.position;
-        StartMoveCoroutine(piece, start, target, false);
+        StartMoveCoroutine(piece, start, target, false, fallAnimationDuration, true);
     }
 
-    private void StartMoveCoroutine(Piece piece, Vector3 start, Vector3 target, bool isUI)
+    private void ApplyUIPosition(Piece piece, Vector2 target, float duration, bool bounce)
+    {
+        if (duration <= 0f)
+        {
+            piece.ApplyUIPosition(target);
+            return;
+        }
+
+        Vector2 start = piece.RectTransform != null ? piece.RectTransform.anchoredPosition : target;
+        StartMoveCoroutine(piece, start, target, true, duration, bounce);
+    }
+
+    private void ApplyWorldPosition(Piece piece, Vector3 target, float duration, bool bounce)
+    {
+        if (duration <= 0f)
+        {
+            piece.transform.position = target;
+            return;
+        }
+
+        Vector3 start = piece.transform.position;
+        StartMoveCoroutine(piece, start, target, false, duration, bounce);
+    }
+
+    private void StartMoveCoroutine(Piece piece, Vector3 start, Vector3 target, bool isUI, float duration, bool bounce)
     {
         if (moveCoroutines.TryGetValue(piece, out Coroutine existing) && existing != null)
         {
             StopCoroutine(existing);
         }
 
-        Coroutine routine = StartCoroutine(MovePieceRoutine(piece, start, target, isUI));
+        Coroutine routine = StartCoroutine(MovePieceRoutine(piece, start, target, isUI, duration, bounce));
         moveCoroutines[piece] = routine;
     }
 
-    private System.Collections.IEnumerator MovePieceRoutine(Piece piece, Vector3 start, Vector3 target, bool isUI)
+    private System.Collections.IEnumerator MovePieceRoutine(Piece piece, Vector3 start, Vector3 target, bool isUI, float duration, bool bounce)
     {
         float elapsed = 0f;
-        float duration = Mathf.Max(0.01f, fallAnimationDuration);
+        float moveDuration = Mathf.Max(0.01f, duration);
 
-        while (elapsed < duration)
+        while (elapsed < moveDuration)
         {
             if (piece == null)
             {
                 yield break;
             }
 
-            float t = elapsed / duration;
+            float t = elapsed / moveDuration;
             Vector3 position = Vector3.Lerp(start, target, t);
             if (isUI)
             {
@@ -517,6 +641,81 @@ public class PuzzleBord : MonoBehaviour
             else
             {
                 piece.transform.position = target;
+            }
+        }
+
+        if (bounce && landingBounceDuration > 0f)
+        {
+            StartBounceCoroutine(piece, isUI);
+        }
+    }
+
+    private void StartBounceCoroutine(Piece piece, bool isUI)
+    {
+        if (piece == null)
+        {
+            return;
+        }
+
+        if (bounceCoroutines.TryGetValue(piece, out Coroutine existing) && existing != null)
+        {
+            StopCoroutine(existing);
+        }
+
+        Coroutine routine = StartCoroutine(BouncePieceRoutine(piece, isUI));
+        bounceCoroutines[piece] = routine;
+    }
+
+    private System.Collections.IEnumerator BouncePieceRoutine(Piece piece, bool isUI)
+    {
+        float elapsed = 0f;
+        float duration = Mathf.Max(0.01f, landingBounceDuration);
+        Vector3 baseScale = Vector3.one;
+
+        if (isUI && piece.RectTransform != null)
+        {
+            baseScale = piece.RectTransform.localScale;
+        }
+        else if (!isUI)
+        {
+            baseScale = piece.transform.localScale;
+        }
+
+        while (elapsed < duration)
+        {
+            if (piece == null)
+            {
+                yield break;
+            }
+
+            float t = elapsed / duration;
+            float phase = t < 0.5f ? t * 2f : (t - 0.5f) * 2f;
+            Vector3 targetScale = t < 0.5f
+                ? Vector3.Lerp(baseScale, Vector3.Scale(baseScale, landingBounceScale), phase)
+                : Vector3.Lerp(Vector3.Scale(baseScale, landingBounceScale), baseScale, phase);
+
+            if (isUI && piece.RectTransform != null)
+            {
+                piece.RectTransform.localScale = targetScale;
+            }
+            else if (!isUI)
+            {
+                piece.transform.localScale = targetScale;
+            }
+
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        if (piece != null)
+        {
+            if (isUI && piece.RectTransform != null)
+            {
+                piece.RectTransform.localScale = baseScale;
+            }
+            else if (!isUI)
+            {
+                piece.transform.localScale = baseScale;
             }
         }
     }
