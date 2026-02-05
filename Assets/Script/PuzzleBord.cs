@@ -13,6 +13,7 @@ public class PuzzleBord : MonoBehaviour
     [Header("Piece Settings")]
     [SerializeField] private Piece piecePrefab;
     [SerializeField] private PuyoSpriteSet spriteSet;
+    [SerializeField] private PuyoSpriteSet clearEffectSpriteSet;
 
     [Header("Fall Settings")]
     [SerializeField] private float fallInterval = 0.8f;
@@ -750,6 +751,11 @@ public class PuzzleBord : MonoBehaviour
 
         Transform parent = piece.transform.parent;
         PuyoClearEffect effect = Instantiate(clearEffectPrefab, parent, false);
+        PuyoSpriteSet spriteSource = clearEffectSpriteSet != null ? clearEffectSpriteSet : spriteSet;
+        if (spriteSource != null)
+        {
+            effect.SetSprite(spriteSource.GetSprite(piece.Type));
+        }
 
         if (piece.IsUI && piece.RectTransform != null)
         {

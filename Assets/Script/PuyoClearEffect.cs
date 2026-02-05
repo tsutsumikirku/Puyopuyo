@@ -33,6 +33,24 @@ public class PuyoClearEffect : MonoBehaviour
         }
     }
 
+    public void SetSprite(Sprite sprite)
+    {
+        if (sprite == null)
+        {
+            return;
+        }
+
+        if (uiImage != null)
+        {
+            uiImage.sprite = sprite;
+        }
+
+        if (spriteRenderer != null)
+        {
+            spriteRenderer.sprite = sprite;
+        }
+    }
+
     public void PlayUI(RectTransform source, Vector2 size)
     {
         if (rectTransform != null)
