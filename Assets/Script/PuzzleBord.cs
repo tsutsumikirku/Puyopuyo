@@ -144,7 +144,7 @@ public class PuzzleBord : MonoBehaviour
         }
 
         fallTimer = 0f;
-        if (!TryMoveActive(Vector2Int.down))
+        if (!TryMoveActive(Vector2Int.down, interval))
         {
             LockActivePair();
         }
@@ -333,6 +333,11 @@ public class PuzzleBord : MonoBehaviour
 
     private bool TryMoveActive(Vector2Int delta)
     {
+        return TryMoveActive(delta, 0f);
+    }
+
+    private bool TryMoveActive(Vector2Int delta, float animationDuration)
+    {
         Vector2Int newPivot = activePair.Pivot + delta;
         Vector2Int newChild = activePair.Pivot + activePair.Offset + delta;
 
@@ -342,7 +347,15 @@ public class PuzzleBord : MonoBehaviour
         }
 
         activePair.Pivot = newPivot;
-        UpdateActiveWorldPositions();
+        if (animationDuration > 0f)
+        {
+            ApplyGridPosition(activePair.PivotPiece, activePair.Pivot, animationDuration, false);
+            ApplyGridPosition(activePair.ChildPiece, activePair.Pivot + activePair.Offset, animationDuration, false);
+        }
+        else
+        {
+            UpdateActiveWorldPositions();
+        }
         RefreshAllSprites();
         return true;
     }
