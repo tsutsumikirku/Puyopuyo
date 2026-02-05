@@ -9,6 +9,7 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float spacing = 1.1f;
     [SerializeField] private Vector2 origin = Vector2.zero;
     [SerializeField] private Vector2 uiCellSize = new Vector2(64f, 64f);
+    [SerializeField] private bool centerBoardOnTransform = true;
 
     [Header("Piece Settings")]
     [SerializeField] private Piece piecePrefab;
@@ -78,6 +79,11 @@ public class PuzzleBord : MonoBehaviour
         {
             Debug.LogWarning("PuzzleBord requires a piece prefab and sprite set to start the game.");
             return;
+        }
+
+        if (centerBoardOnTransform)
+        {
+            AlignOriginToCenter();
         }
 
         board = new Piece[width, height];
@@ -189,6 +195,8 @@ public class PuzzleBord : MonoBehaviour
             PivotPiece = pivotPiece,
             ChildPiece = childPiece
         };
+
+        RefreshAllSprites();
     }
 
     private Piece CreatePiece(Vector2Int gridPosition, PieceType type)
@@ -257,6 +265,7 @@ public class PuzzleBord : MonoBehaviour
 
         activePair.Pivot = newPivot;
         UpdateActiveWorldPositions();
+        RefreshAllSprites();
         return true;
     }
 
@@ -283,6 +292,7 @@ public class PuzzleBord : MonoBehaviour
                 activePair.Pivot = newPivot;
                 activePair.Offset = rotatedOffset;
                 AnimateActivePositions(rotateAnimationDuration);
+                RefreshAllSprites();
                 return;
             }
         }
@@ -296,6 +306,7 @@ public class PuzzleBord : MonoBehaviour
                 activePair.Pivot = swappedPivot;
                 activePair.Offset = -activePair.Offset;
                 AnimateActivePositions(rotateAnimationDuration);
+                RefreshAllSprites();
             }
         }
     }
@@ -347,6 +358,7 @@ public class PuzzleBord : MonoBehaviour
         board[childPosition.x, childPosition.y] = childPiece;
         activePair = default;
 
+        RefreshAllSprites();
         StartBounceCoroutine(pivotPiece, pivotPiece != null && pivotPiece.IsUI);
         StartBounceCoroutine(childPiece, childPiece != null && childPiece.IsUI);
         StartCoroutine(ResolveAfterLockRoutine());
@@ -426,6 +438,8 @@ public class PuzzleBord : MonoBehaviour
             Destroy(piece.gameObject);
             board[cell.x, cell.y] = null;
         }
+
+        RefreshAllSprites();
     }
 
     private System.Collections.IEnumerator BlinkMatches(List<Vector2Int> matches)
@@ -544,6 +558,11 @@ public class PuzzleBord : MonoBehaviour
 
                 writeRow++;
             }
+        }
+
+        if (moved)
+        {
+            RefreshAllSprites();
         }
 
         return moved;
@@ -764,6 +783,136 @@ public class PuzzleBord : MonoBehaviour
         else
         {
             effect.PlayWorld(piece.transform.position);
+        }
+    }
+
+    private void RefreshAllSprites()
+    {
+        if (spriteSet == null || board == null)
+        {
+            return;
+        }
+
+        for (int x = 0; x < width; x++)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                Piece piece = board[x, y];
+                if (piece == null)
+                {
+                    continue;
+                }
+
+                UpdatePieceSprite(piece, new Vector2Int(x, y));
+            }
+        }
+
+        if (activePair.PivotPiece != null)
+        {
+            UpdatePieceSprite(activePair.PivotPiece, activePair.Pivot);
+        }
+
+        if (activePair.ChildPiece != null)
+        {
+            UpdatePieceSprite(activePair.ChildPiece, activePair.Pivot + activePair.Offset);
+        }
+    }
+
+    private void UpdatePieceSprite(Piece piece, Vector2Int gridPosition)
+    {
+        if (piece == null || spriteSet == null)
+        {
+            return;
+        }
+
+        PuyoConnectionMask connections = GetConnections(gridPosition, piece.Type);
+        piece.ApplySprite(spriteSet.GetSprite(piece.Type, connections));
+    }
+
+    private PuyoConnectionMask GetConnections(Vector2Int gridPosition, PieceType type)
+    {
+        PuyoConnectionMask connections = PuyoConnectionMask.None;
+        if (IsSameTypeAt(gridPosition + Vector2Int.up, type))
+        {
+            connections |= PuyoConnectionMask.Up;
+        }
+
+        if (IsSameTypeAt(gridPosition + Vector2Int.down, type))
+        {
+            connections |= PuyoConnectionMask.Down;
+        }
+
+        if (IsSameTypeAt(gridPosition + Vector2Int.left, type))
+        {
+            connections |= PuyoConnectionMask.Left;
+        }
+
+        if (IsSameTypeAt(gridPosition + Vector2Int.right, type))
+        {
+            connections |= PuyoConnectionMask.Right;
+        }
+
+        return connections;
+    }
+
+    private bool IsSameTypeAt(Vector2Int gridPosition, PieceType type)
+    {
+        Piece piece = GetPieceAt(gridPosition);
+        return piece != null && piece.Type == type;
+    }
+
+    private Piece GetPieceAt(Vector2Int gridPosition)
+    {
+        if (gridPosition.x < 0 || gridPosition.x >= width || gridPosition.y < 0 || gridPosition.y >= height)
+        {
+            return null;
+        }
+
+        if (activePair.PivotPiece != null && gridPosition == activePair.Pivot)
+        {
+            return activePair.PivotPiece;
+        }
+
+        if (activePair.ChildPiece != null && gridPosition == activePair.Pivot + activePair.Offset)
+        {
+            return activePair.ChildPiece;
+        }
+
+        return board != null ? board[gridPosition.x, gridPosition.y] : null;
+    }
+
+    private void AlignOriginToCenter()
+    {
+        Vector2 cellSize = UseUIGrid() ? uiCellSize : new Vector2(spacing, spacing);
+        Vector2 center = GetBoardCenterPosition();
+        origin = center - new Vector2((width - 1) * cellSize.x * 0.5f, (height - 1) * cellSize.y * 0.5f);
+    }
+
+    private Vector2 GetBoardCenterPosition()
+    {
+        if (UseUIGrid() && TryGetComponent(out RectTransform rectTransform))
+        {
+            return rectTransform.anchoredPosition;
+        }
+
+        return transform.position;
+    }
+
+    private bool UseUIGrid()
+    {
+        if (piecePrefab == null)
+        {
+            return false;
+        }
+
+        return piecePrefab.IsUI || piecePrefab.GetComponent<RectTransform>() != null;
+    }
+
+    private void OnValidate()
+    {
+        if (centerBoardOnTransform)
+        {
+            AlignOriginToCenter();
         }
     }
 
