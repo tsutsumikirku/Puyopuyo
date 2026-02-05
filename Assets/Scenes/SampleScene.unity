@@ -497,9 +497,16 @@ MonoBehaviour:
   uiCellSize: {x: 64, y: 64}
   piecePrefab: {fileID: 2490409042072829713, guid: 97c8af20d0b8bc94eb96c5876031f164, type: 3}
   spriteSet: {fileID: 11400000, guid: 914d1b06ec64de44d978a860382587d6, type: 2}
+  clearEffectSpriteSet: {fileID: 11400000, guid: 7d4474f13ff5efa4f814b15be44b5ed9, type: 2}
   fallInterval: 0.8
   softDropInterval: 0.05
   fallAnimationDuration: 0.15
+  rotateAnimationDuration: 0.08
+  landingBounceDuration: 0.12
+  landingBounceScale: {x: 1.1, y: 0.9, z: 1}
+  clearBlinkDuration: 0.3
+  clearBlinkInterval: 0.08
+  clearEffectPrefab: {fileID: 7245309023116421309, guid: f10dd85c6e67fca4091ae3f960893e7a, type: 3}
   moveLeftKey: 276
   moveRightKey: 275
   softDropKey: 274
