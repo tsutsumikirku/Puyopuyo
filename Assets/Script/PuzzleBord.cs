@@ -145,7 +145,7 @@ public class PuzzleBord : MonoBehaviour
         }
 
         fallTimer = 0f;
-        if (!TryMoveActive(Vector2Int.down, interval))
+        if (!TryMoveActive(Vector2Int.down, fallAnimationDuration))
         {
             LockActivePair();
         }
