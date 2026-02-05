@@ -21,6 +21,8 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float rotateAnimationDuration = 0.08f;
     [SerializeField] private float landingBounceDuration = 0.12f;
     [SerializeField] private Vector3 landingBounceScale = new Vector3(1.1f, 0.9f, 1f);
+    [SerializeField] private float clearBlinkDuration = 0.3f;
+    [SerializeField] private float clearBlinkInterval = 0.08f;
 
     [Header("Input Settings")]
     [SerializeField] private KeyCode moveLeftKey = KeyCode.LeftArrow;
@@ -34,6 +36,7 @@ public class PuzzleBord : MonoBehaviour
     private ActivePair activePair;
     private float fallTimer;
     private bool gameOver;
+    private bool isResolving;
     private readonly Dictionary<Piece, Coroutine> moveCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly Dictionary<Piece, Coroutine> bounceCoroutines = new Dictionary<Piece, Coroutine>();
 
@@ -44,7 +47,7 @@ public class PuzzleBord : MonoBehaviour
 
     private void Update()
     {
-        if (gameOver || activePair.PivotPiece == null)
+        if (gameOver || isResolving || activePair.PivotPiece == null)
         {
             return;
         }
@@ -336,43 +339,56 @@ public class PuzzleBord : MonoBehaviour
     {
         Vector2Int pivotPosition = activePair.Pivot;
         Vector2Int childPosition = activePair.Pivot + activePair.Offset;
-        board[pivotPosition.x, pivotPosition.y] = activePair.PivotPiece;
-        board[childPosition.x, childPosition.y] = activePair.ChildPiece;
+        Piece pivotPiece = activePair.PivotPiece;
+        Piece childPiece = activePair.ChildPiece;
+        board[pivotPosition.x, pivotPosition.y] = pivotPiece;
+        board[childPosition.x, childPosition.y] = childPiece;
         activePair = default;
 
+        StartBounceCoroutine(pivotPiece, pivotPiece != null && pivotPiece.IsUI);
+        StartBounceCoroutine(childPiece, childPiece != null && childPiece.IsUI);
         StartCoroutine(ResolveAfterLockRoutine());
     }
 
     private System.Collections.IEnumerator ResolveAfterLockRoutine()
     {
+        isResolving = true;
+
         bool moved = CollapseBoard(true);
         if (moved)
         {
             yield return new WaitForSeconds(fallAnimationDuration);
         }
 
-        bool cleared;
-        do
+        while (true)
         {
-            cleared = ClearMatches();
-            if (cleared)
+            List<List<Vector2Int>> groups = FindMatchGroups();
+            if (groups.Count == 0)
             {
-                bool collapsed = CollapseBoard(true);
-                if (collapsed)
-                {
-                    yield return new WaitForSeconds(fallAnimationDuration);
-                }
+                break;
             }
-        } while (cleared);
 
+            foreach (List<Vector2Int> group in groups)
+            {
+                yield return StartCoroutine(BlinkMatches(group));
+                ClearMatches(group);
+            }
+
+            bool collapsed = CollapseBoard(true);
+            if (collapsed)
+            {
+                yield return new WaitForSeconds(fallAnimationDuration);
+            }
+        }
+
+        isResolving = false;
         SpawnPair();
     }
 
-    private bool ClearMatches()
+    private List<List<Vector2Int>> FindMatchGroups()
     {
         bool[,] visited = new bool[width, height];
-        bool[,] toClear = new bool[width, height];
-        bool anyCleared = false;
+        List<List<Vector2Int>> groups = new List<List<Vector2Int>>();
 
         for (int x = 0; x < width; x++)
         {
@@ -386,33 +402,67 @@ public class PuzzleBord : MonoBehaviour
                 List<Vector2Int> group = FloodFillGroup(new Vector2Int(x, y), visited);
                 if (group.Count >= 4)
                 {
-                    anyCleared = true;
-                    foreach (Vector2Int cell in group)
-                    {
-                        toClear[cell.x, cell.y] = true;
-                    }
+                    groups.Add(group);
                 }
             }
         }
 
-        if (!anyCleared)
-        {
-            return false;
-        }
+        return groups;
+    }
 
-        for (int x = 0; x < width; x++)
+    private void ClearMatches(List<Vector2Int> matches)
+    {
+        foreach (Vector2Int cell in matches)
         {
-            for (int y = 0; y < height; y++)
+            Piece piece = board[cell.x, cell.y];
+            if (piece == null)
             {
-                if (toClear[x, y])
-                {
-                    Destroy(board[x, y].gameObject);
-                    board[x, y] = null;
-                }
+                continue;
+            }
+
+            Destroy(piece.gameObject);
+            board[cell.x, cell.y] = null;
+        }
+    }
+
+    private System.Collections.IEnumerator BlinkMatches(List<Vector2Int> matches)
+    {
+        HashSet<Piece> pieces = new HashSet<Piece>();
+        foreach (Vector2Int cell in matches)
+        {
+            Piece piece = board[cell.x, cell.y];
+            if (piece != null)
+            {
+                pieces.Add(piece);
             }
         }
 
-        return true;
+        float elapsed = 0f;
+        bool visible = true;
+        float interval = Mathf.Max(0.01f, clearBlinkInterval);
+        while (elapsed < clearBlinkDuration)
+        {
+            visible = !visible;
+            float alpha = visible ? 1f : 0.2f;
+            foreach (Piece piece in pieces)
+            {
+                if (piece != null)
+                {
+                    piece.SetAlpha(alpha);
+                }
+            }
+
+            elapsed += interval;
+            yield return new WaitForSeconds(interval);
+        }
+
+        foreach (Piece piece in pieces)
+        {
+            if (piece != null)
+            {
+                piece.SetAlpha(1f);
+            }
+        }
     }
 
     private List<Vector2Int> FloodFillGroup(Vector2Int start, bool[,] visited)
