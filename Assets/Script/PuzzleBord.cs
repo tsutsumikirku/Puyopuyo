@@ -557,6 +557,12 @@ public class PuzzleBord : MonoBehaviour
         Piece pivotPiece = activePair.PivotPiece;
         Piece childPiece = activePair.ChildPiece;
         board[pivotPosition.x, pivotPosition.y] = pivotPiece;
+        if (childPosition.y >= height)
+        {
+            SetGameOver("Game Over: piece locked above the board.");
+            return;
+        }
+
         board[childPosition.x, childPosition.y] = childPiece;
         activePair = default;
 
