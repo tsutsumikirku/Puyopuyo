@@ -17,6 +17,7 @@ MonoBehaviour:
   green: {fileID: -2008916611, guid: 03f6fe9c94294d34d90ca5900548820a, type: 3}
   yellow: {fileID: -368759971, guid: 03f6fe9c94294d34d90ca5900548820a, type: 3}
   purple: {fileID: -1771156723, guid: 03f6fe9c94294d34d90ca5900548820a, type: 3}
+  ojama: {fileID: -405227253, guid: 03f6fe9c94294d34d90ca5900548820a, type: 3}
   redConnected:
   - {fileID: 2263388023574171632, guid: 03f6fe9c94294d34d90ca5900548820a, type: 3}
   - {fileID: 380325218, guid: 03f6fe9c94294d34d90ca5900548820a, type: 3}

@@ -119,6 +119,84 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &254572880
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 254572881}
+  - component: {fileID: 254572882}
+  m_Layer: 5
+  m_Name: GameObject (1)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &254572881
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254572880}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1207738919}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -379.51, y: -0.000016212}
+  m_SizeDelta: {x: 1160.98, y: 998.8365}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &254572882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254572880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 941877a9e6fd8c7479e4f928fa39bb11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  width: 6
+  height: 12
+  spacing: 1.1
+  origin: {x: -539.51, y: -352.00003}
+  uiCellSize: {x: 64, y: 64}
+  centerBoardOnTransform: 1
+  piecePrefab: {fileID: 2490409042072829713, guid: 97c8af20d0b8bc94eb96c5876031f164, type: 3}
+  spriteSet: {fileID: 11400000, guid: 914d1b06ec64de44d978a860382587d6, type: 2}
+  clearEffectSpriteSet: {fileID: 11400000, guid: 7d4474f13ff5efa4f814b15be44b5ed9, type: 2}
+  fallInterval: 0.8
+  softDropInterval: 0.05
+  fallAnimationDuration: 0.15
+  lateralMoveAnimationDuration: 0.08
+  rotateAnimationDuration: 0.08
+  landingBounceDuration: 0.12
+  landingBounceScale: {x: 1.1, y: 0.9, z: 1}
+  clearBlinkDuration: 0.3
+  clearBlinkInterval: 0.08
+  garbageDropDelay: 0.2
+  clearEffectPrefab: {fileID: 7245309023116421309, guid: f10dd85c6e67fca4091ae3f960893e7a, type: 3}
+  opponentBoard: {fileID: 1210165015}
+  frameSprite: {fileID: -263907133, guid: 03f6fe9c94294d34d90ca5900548820a, type: 3}
+  frameColor: {r: 1, g: 1, b: 1, a: 1}
+  showFrameTiles: 1
+  moveLeftKey: 97
+  moveRightKey: 100
+  softDropKey: 115
+  hardDropKey: 32
+  rotateClockwiseKey: 120
+  rotateCounterClockwiseKey: 122
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -435,6 +513,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1210165014}
+  - {fileID: 254572881}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -475,7 +554,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -16, y: -0.000016212}
+  m_AnchoredPosition: {x: 379.51, y: -0.000016212}
   m_SizeDelta: {x: 1160.98, y: 998.8365}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1210165015
@@ -493,7 +572,7 @@ MonoBehaviour:
   width: 6
   height: 12
   spacing: 1.1
-  origin: {x: -176, y: -352.00003}
+  origin: {x: 219.51001, y: -352.00003}
   uiCellSize: {x: 64, y: 64}
   centerBoardOnTransform: 1
   piecePrefab: {fileID: 2490409042072829713, guid: 97c8af20d0b8bc94eb96c5876031f164, type: 3}
@@ -502,12 +581,15 @@ MonoBehaviour:
   fallInterval: 0.8
   softDropInterval: 0.05
   fallAnimationDuration: 0.15
+  lateralMoveAnimationDuration: 0.08
   rotateAnimationDuration: 0.08
   landingBounceDuration: 0.12
   landingBounceScale: {x: 1.1, y: 0.9, z: 1}
   clearBlinkDuration: 0.3
   clearBlinkInterval: 0.08
+  garbageDropDelay: 0.2
   clearEffectPrefab: {fileID: 7245309023116421309, guid: f10dd85c6e67fca4091ae3f960893e7a, type: 3}
+  opponentBoard: {fileID: 254572882}
   frameSprite: {fileID: -263907133, guid: 03f6fe9c94294d34d90ca5900548820a, type: 3}
   frameColor: {r: 1, g: 1, b: 1, a: 1}
   showFrameTiles: 1
@@ -515,8 +597,8 @@ MonoBehaviour:
   moveRightKey: 275
   softDropKey: 274
   hardDropKey: 32
-  rotateClockwiseKey: 120
-  rotateCounterClockwiseKey: 122
+  rotateClockwiseKey: 110
+  rotateCounterClockwiseKey: 109
 --- !u!1 &1837298114
 GameObject:
   m_ObjectHideFlags: 0
