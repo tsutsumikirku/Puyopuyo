@@ -1,33 +1,92 @@
+using Cysharp.Threading.Tasks;
 using Microsoft.Unity.VisualStudio.Editor;
+using UnityEditor.SearchService;
 using UnityEngine;
 
 public class TitleManager : MonoBehaviour
 {
     int selection = 0;
+    [SerializeField] TitleButton[] titleButtons;
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioClip selectSE;
+    [SerializeField] AudioClip decisionSE;
+    [SerializeField] SceneChanger1 sceneChanger;
     void Start()
     {
         var saveData = SaveSystem.Load();
         selection = saveData.selection;
+        for (int i = 0; i < titleButtons.Length; i++)
+        {
+            if(i == selection)
+            {
+                titleButtons[i].Select();
+            }
+            else
+            {
+                titleButtons[i].Unselect();
+            }
+        }
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.RightArrow))
+        if (Input.GetKeyDown(KeyCode.DownArrow))
         {
+            audioSource.PlayOneShot(decisionSE);
             selection++;
-            if(selection  > 1)
+            if(selection  > 2)
             {
                 selection = 0;
             }
             SaveSystem.Save(new SaveData { selection = selection });
+            for (int i = 0; i < titleButtons.Length; i++)
+            {
+                if(i == selection)
+                {
+                    titleButtons[i].Select();
+                }
+                else
+                {
+                    titleButtons[i].Unselect();
+                }
         }
-        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        }
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
+            audioSource.PlayOneShot(decisionSE);
             selection--;
             if(selection < 0)
             {
-                selection = 1;
+                selection = 2;
             }
             SaveSystem.Save(new SaveData { selection = selection });
+            for (int i = 0; i < titleButtons.Length; i++)
+            {
+                if(i == selection)
+                {
+                    titleButtons[i].Select();
+                }
+                else
+                {
+                    titleButtons[i].Unselect();
+                }
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            switch (selection)
+            {
+                case 0:
+                    GameManager.instance.currentGameMode = GameMode.Single;
+                    sceneChanger.ChangeSceneAsync("CharacterSelect").Forget();
+                    break;
+                case 1:
+                    GameManager.instance.currentGameMode = GameMode.Versus;
+                    sceneChanger.ChangeSceneAsync("SingleCharacterSelect").Forget();
+                    break;
+                case 2:
+                    
+                    break;
+            }
         }
     }
 }
