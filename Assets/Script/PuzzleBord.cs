@@ -1276,7 +1276,7 @@ public class PuzzleBord : MonoBehaviour
     {
         if (UseUIGrid() && TryGetComponent(out RectTransform rectTransform))
         {
-            return rectTransform.anchoredPosition;
+            return rectTransform.rect.center;
         }
 
         return transform.position;
