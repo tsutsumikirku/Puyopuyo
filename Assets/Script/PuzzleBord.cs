@@ -492,9 +492,16 @@ public class PuzzleBord : MonoBehaviour
                 clearedThisChain += ClearMatches(group);
             }
 
-            if (opponentBoard != null && clearedThisChain > 0)
+            int canceledGarbage = Mathf.Min(pendingGarbage, clearedThisChain);
+            if (canceledGarbage > 0)
             {
-                opponentBoard.ReceiveGarbage(clearedThisChain);
+                pendingGarbage -= canceledGarbage;
+            }
+
+            int sendGarbage = clearedThisChain - canceledGarbage;
+            if (opponentBoard != null && sendGarbage > 0)
+            {
+                opponentBoard.ReceiveGarbage(sendGarbage);
             }
 
             bool collapsed = CollapseBoard(true);
