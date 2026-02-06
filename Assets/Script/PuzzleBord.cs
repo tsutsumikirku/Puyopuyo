@@ -27,6 +27,7 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private Vector3 landingBounceScale = new Vector3(1.1f, 0.9f, 1f);
     [SerializeField] private float clearBlinkDuration = 0.3f;
     [SerializeField] private float clearBlinkInterval = 0.08f;
+    [SerializeField] private float garbageDropDelay = 0.2f;
     [SerializeField] private PuyoClearEffect clearEffectPrefab;
     [SerializeField] private PuzzleBord opponentBoard;
 
@@ -1032,6 +1033,11 @@ public class PuzzleBord : MonoBehaviour
         if (pendingGarbage <= 0 || board == null)
         {
             yield break;
+        }
+
+        if (garbageDropDelay > 0f)
+        {
+            yield return new WaitForSeconds(garbageDropDelay);
         }
 
         int remaining = pendingGarbage;
