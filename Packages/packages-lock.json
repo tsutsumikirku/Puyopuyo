@@ -1,5 +1,19 @@
 {
   "dependencies": {
+    "com.cysharp.unitask": {
+      "version": "2.5.10",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://package.openupm.com"
+    },
+    "com.tsutsumikiriku.yourmaidtools": {
+      "version": "https://github.com/tsutsumikirku/YourMaidTools.git",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "b71889fb64d7997b1eeac4c88a93da7a8f70f13f"
+    },
     "com.unity.2d.animation": {
       "version": "10.2.1",
       "depth": 1,
