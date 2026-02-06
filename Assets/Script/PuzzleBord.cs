@@ -41,7 +41,7 @@ public class PuzzleBord : MonoBehaviour
     [Header("Frame Settings")]
     [SerializeField] private Sprite frameSprite;
     [SerializeField] private Color frameColor = Color.white;
-    [SerializeField] private bool showFrameTiles = true;
+    [SerializeField] private bool showFrameTiles = false;
 
     [Header("Input Settings")]
     [SerializeField] private KeyCode moveLeftKey = KeyCode.LeftArrow;
