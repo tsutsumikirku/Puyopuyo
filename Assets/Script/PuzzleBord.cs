@@ -28,9 +28,6 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float clearBlinkDuration = 0.3f;
     [SerializeField] private float clearBlinkInterval = 0.08f;
     [SerializeField] private float garbageDropDelay = 0.2f;
-    [SerializeField] private float gameOverFallDuration = 0.8f;
-    [SerializeField] private float gameOverFallDistance = 8f;
-    [SerializeField] private float gameOverRotationDegrees = 360f;
     [SerializeField] private PuyoClearEffect clearEffectPrefab;
     [SerializeField] private PuzzleBord opponentBoard;
 
@@ -56,6 +53,8 @@ public class PuzzleBord : MonoBehaviour
     private readonly Dictionary<Piece, Coroutine> moveCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly Dictionary<Piece, Coroutine> bounceCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly List<GameObject> frameTiles = new List<GameObject>();
+
+    public System.Action OnGameOver;
 
     private void Start()
     {
@@ -1144,57 +1143,8 @@ public class PuzzleBord : MonoBehaviour
 
         gameOver = true;
         Debug.LogWarning(message);
-        StartCoroutine(GameOverRoutine());
-    }
-
-    private System.Collections.IEnumerator GameOverRoutine()
-    {
         isResolving = true;
-
-        if (TryGetComponent(out RectTransform rectTransform))
-        {
-            Vector2 startPosition = rectTransform.anchoredPosition;
-            Vector2 endPosition = startPosition + Vector2.down * gameOverFallDistance;
-            Quaternion startRotation = rectTransform.localRotation;
-            Quaternion endRotation = startRotation * Quaternion.Euler(0f, 0f, gameOverRotationDegrees);
-
-            float moveDuration = Mathf.Max(0.01f, gameOverFallDuration);
-            float elapsed = 0f;
-            while (elapsed < moveDuration)
-            {
-                float t = elapsed / moveDuration;
-                rectTransform.anchoredPosition = Vector2.Lerp(startPosition, endPosition, t);
-                rectTransform.localRotation = Quaternion.Slerp(startRotation, endRotation, t);
-                elapsed += Time.deltaTime;
-                yield return null;
-            }
-
-            rectTransform.anchoredPosition = endPosition;
-            rectTransform.localRotation = endRotation;
-        }
-        else
-        {
-            Vector3 startPosition = transform.position;
-            Vector3 endPosition = startPosition + Vector3.down * gameOverFallDistance;
-            Quaternion startRotation = transform.rotation;
-            Quaternion endRotation = startRotation * Quaternion.Euler(0f, 0f, gameOverRotationDegrees);
-
-            float moveDuration = Mathf.Max(0.01f, gameOverFallDuration);
-            float elapsed = 0f;
-            while (elapsed < moveDuration)
-            {
-                float t = elapsed / moveDuration;
-                transform.position = Vector3.Lerp(startPosition, endPosition, t);
-                transform.rotation = Quaternion.Slerp(startRotation, endRotation, t);
-                elapsed += Time.deltaTime;
-                yield return null;
-            }
-
-            transform.position = endPosition;
-            transform.rotation = endRotation;
-        }
-
-        Destroy(gameObject);
+        OnGameOver?.Invoke();
     }
 
     private Piece GetPieceAt(Vector2Int gridPosition)
