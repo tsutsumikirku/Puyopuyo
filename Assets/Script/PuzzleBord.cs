@@ -22,6 +22,7 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private Vector2 nextPreviewCellSize = new Vector2(48f, 48f);
     [SerializeField] private float nextPreviewSpacing = 0.9f;
     [SerializeField] private bool showNextPreview = true;
+    [SerializeField] private bool autoFitNextPreviewCellSize = true;
 
     [Header("Fall Settings")]
     [SerializeField] private float fallInterval = 0.8f;
@@ -254,6 +255,11 @@ public class PuzzleBord : MonoBehaviour
             return;
         }
 
+        if (autoFitNextPreviewCellSize)
+        {
+            UpdateNextPreviewCellSize();
+        }
+
         if (nextPreviewPivot == null)
         {
             nextPreviewPivot = CreatePreviewPiece();
@@ -269,6 +275,27 @@ public class PuzzleBord : MonoBehaviour
 
         ApplyPreviewPosition(nextPreviewPivot, Vector2Int.zero);
         ApplyPreviewPosition(nextPreviewChild, Vector2Int.up);
+    }
+
+    private void UpdateNextPreviewCellSize()
+    {
+        if (nextPreviewRoot == null)
+        {
+            return;
+        }
+
+        if (nextPreviewRoot.TryGetComponent(out RectTransform rectTransform))
+        {
+            Vector2 size = rectTransform.rect.size;
+            if (size.x > 0f && size.y > 0f)
+            {
+                float cellSize = Mathf.Min(size.x, size.y) * 0.5f;
+                if (cellSize > 0f)
+                {
+                    nextPreviewCellSize = new Vector2(cellSize, cellSize);
+                }
+            }
+        }
     }
 
     private Piece CreatePreviewPiece()
@@ -289,7 +316,7 @@ public class PuzzleBord : MonoBehaviour
         {
             piece.ApplyUISize(nextPreviewCellSize);
             Vector2 anchored = new Vector2(gridPosition.x * nextPreviewCellSize.x, gridPosition.y * nextPreviewCellSize.y);
-            piece.ApplyUIPosition(anchored);
+            piece.ApplyUIPosition(anchored - nextPreviewCellSize * 0.5f);
         }
         else
         {
