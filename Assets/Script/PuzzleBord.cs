@@ -315,13 +315,31 @@ public class PuzzleBord : MonoBehaviour
         if (piece.IsUI)
         {
             piece.ApplyUISize(nextPreviewCellSize);
-            Vector2 anchored = new Vector2(gridPosition.x * nextPreviewCellSize.x, gridPosition.y * nextPreviewCellSize.y);
-            piece.ApplyUIPosition(anchored - nextPreviewCellSize * 0.5f);
+            Vector2 center = GetNextPreviewCenter();
+            Vector2 anchored = new Vector2(gridPosition.x * nextPreviewCellSize.x, (gridPosition.y - 0.5f) * nextPreviewCellSize.y);
+            piece.ApplyUIPosition(center + anchored);
         }
         else
         {
-            piece.transform.localPosition = new Vector3(gridPosition.x * nextPreviewSpacing, gridPosition.y * nextPreviewSpacing, 0f);
+            Vector3 center = GetNextPreviewCenterWorld();
+            Vector3 offset = new Vector3(gridPosition.x * nextPreviewSpacing, (gridPosition.y - 0.5f) * nextPreviewSpacing, 0f);
+            piece.transform.localPosition = center + offset;
         }
+    }
+
+    private Vector2 GetNextPreviewCenter()
+    {
+        if (nextPreviewRoot != null && nextPreviewRoot.TryGetComponent(out RectTransform rectTransform))
+        {
+            return rectTransform.rect.center;
+        }
+
+        return Vector2.zero;
+    }
+
+    private Vector3 GetNextPreviewCenterWorld()
+    {
+        return nextPreviewRoot != null ? nextPreviewRoot.localPosition : Vector3.zero;
     }
 
     private void ClearNextPreview()
