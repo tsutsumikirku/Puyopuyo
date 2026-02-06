@@ -31,7 +31,6 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float gameOverFallDuration = 0.8f;
     [SerializeField] private float gameOverFallDistance = 8f;
     [SerializeField] private float gameOverRotationDegrees = 360f;
-    [SerializeField] private float gameOverDisappearDuration = 0.2f;
     [SerializeField] private PuyoClearEffect clearEffectPrefab;
     [SerializeField] private PuzzleBord opponentBoard;
 
@@ -1152,37 +1151,49 @@ public class PuzzleBord : MonoBehaviour
     {
         isResolving = true;
 
-        Vector3 startPosition = transform.position;
-        Quaternion startRotation = transform.rotation;
-        Vector3 startScale = transform.localScale;
-        Vector3 endPosition = startPosition + Vector3.down * gameOverFallDistance;
-        Quaternion endRotation = startRotation * Quaternion.Euler(0f, 0f, gameOverRotationDegrees);
-
-        float moveDuration = Mathf.Max(0.01f, gameOverFallDuration);
-        float elapsed = 0f;
-        while (elapsed < moveDuration)
+        if (TryGetComponent(out RectTransform rectTransform))
         {
-            float t = elapsed / moveDuration;
-            transform.position = Vector3.Lerp(startPosition, endPosition, t);
-            transform.rotation = Quaternion.Slerp(startRotation, endRotation, t);
-            elapsed += Time.deltaTime;
-            yield return null;
+            Vector2 startPosition = rectTransform.anchoredPosition;
+            Vector2 endPosition = startPosition + Vector2.down * gameOverFallDistance;
+            Quaternion startRotation = rectTransform.localRotation;
+            Quaternion endRotation = startRotation * Quaternion.Euler(0f, 0f, gameOverRotationDegrees);
+
+            float moveDuration = Mathf.Max(0.01f, gameOverFallDuration);
+            float elapsed = 0f;
+            while (elapsed < moveDuration)
+            {
+                float t = elapsed / moveDuration;
+                rectTransform.anchoredPosition = Vector2.Lerp(startPosition, endPosition, t);
+                rectTransform.localRotation = Quaternion.Slerp(startRotation, endRotation, t);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            rectTransform.anchoredPosition = endPosition;
+            rectTransform.localRotation = endRotation;
+        }
+        else
+        {
+            Vector3 startPosition = transform.position;
+            Vector3 endPosition = startPosition + Vector3.down * gameOverFallDistance;
+            Quaternion startRotation = transform.rotation;
+            Quaternion endRotation = startRotation * Quaternion.Euler(0f, 0f, gameOverRotationDegrees);
+
+            float moveDuration = Mathf.Max(0.01f, gameOverFallDuration);
+            float elapsed = 0f;
+            while (elapsed < moveDuration)
+            {
+                float t = elapsed / moveDuration;
+                transform.position = Vector3.Lerp(startPosition, endPosition, t);
+                transform.rotation = Quaternion.Slerp(startRotation, endRotation, t);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            transform.position = endPosition;
+            transform.rotation = endRotation;
         }
 
-        transform.position = endPosition;
-        transform.rotation = endRotation;
-
-        float disappearDuration = Mathf.Max(0.01f, gameOverDisappearDuration);
-        elapsed = 0f;
-        while (elapsed < disappearDuration)
-        {
-            float t = elapsed / disappearDuration;
-            transform.localScale = Vector3.Lerp(startScale, Vector3.zero, t);
-            elapsed += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.localScale = Vector3.zero;
         Destroy(gameObject);
     }
 
