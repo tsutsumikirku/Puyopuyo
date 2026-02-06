@@ -8,6 +8,7 @@ public class PuyoSpriteSet : ScriptableObject
     [SerializeField] private Sprite green;
     [SerializeField] private Sprite yellow;
     [SerializeField] private Sprite purple;
+    [SerializeField] private Sprite ojama;
     [SerializeField] private Sprite[] redConnected = new Sprite[16];
     [SerializeField] private Sprite[] blueConnected = new Sprite[16];
     [SerializeField] private Sprite[] greenConnected = new Sprite[16];
@@ -32,6 +33,7 @@ public class PuyoSpriteSet : ScriptableObject
             PieceType.Green => green,
             PieceType.Yellow => yellow,
             PieceType.Purple => purple,
+            PieceType.Ojama => ojama,
             _ => null
         };
     }

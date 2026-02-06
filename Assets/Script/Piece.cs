@@ -102,5 +102,6 @@ public enum PieceType
     Blue,
     Green,
     Yellow,
-    Purple
+    Purple,
+    Ojama
 }

@@ -27,7 +27,9 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private Vector3 landingBounceScale = new Vector3(1.1f, 0.9f, 1f);
     [SerializeField] private float clearBlinkDuration = 0.3f;
     [SerializeField] private float clearBlinkInterval = 0.08f;
+    [SerializeField] private float garbageDropDelay = 0.2f;
     [SerializeField] private PuyoClearEffect clearEffectPrefab;
+    [SerializeField] private PuzzleBord opponentBoard;
 
     [Header("Frame Settings")]
     [SerializeField] private Sprite frameSprite;
@@ -47,9 +49,12 @@ public class PuzzleBord : MonoBehaviour
     private float fallTimer;
     private bool gameOver;
     private bool isResolving;
+    private int pendingGarbage;
     private readonly Dictionary<Piece, Coroutine> moveCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly Dictionary<Piece, Coroutine> bounceCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly List<GameObject> frameTiles = new List<GameObject>();
+
+    public System.Action OnGameOver;
 
     private void Start()
     {
@@ -97,6 +102,7 @@ public class PuzzleBord : MonoBehaviour
         board = new Piece[width, height];
         fallTimer = 0f;
         gameOver = false;
+        pendingGarbage = 0;
         BuildFrameTiles();
         SpawnPair();
     }
@@ -189,8 +195,7 @@ public class PuzzleBord : MonoBehaviour
 
         if (!IsCellEmpty(pivotPosition) || !IsCellEmpty(childPosition))
         {
-            gameOver = true;
-            Debug.LogWarning("Game Over: spawn position blocked.");
+            SetGameOver("Game Over: spawn position blocked.");
             return;
         }
 
@@ -481,10 +486,23 @@ public class PuzzleBord : MonoBehaviour
                 break;
             }
 
+            int clearedThisChain = 0;
             foreach (List<Vector2Int> group in groups)
             {
                 yield return StartCoroutine(BlinkMatches(group));
-                ClearMatches(group);
+                clearedThisChain += ClearMatches(group);
+            }
+
+            int canceledGarbage = Mathf.Min(pendingGarbage, clearedThisChain);
+            if (canceledGarbage > 0)
+            {
+                pendingGarbage -= canceledGarbage;
+            }
+
+            int sendGarbage = clearedThisChain - canceledGarbage;
+            if (opponentBoard != null && sendGarbage > 0)
+            {
+                opponentBoard.ReceiveGarbage(sendGarbage);
             }
 
             bool collapsed = CollapseBoard(true);
@@ -494,6 +512,10 @@ public class PuzzleBord : MonoBehaviour
             }
         }
 
+        if (pendingGarbage > 0)
+        {
+            yield return StartCoroutine(DropGarbageRoutine());
+        }
         isResolving = false;
         SpawnPair();
     }
@@ -512,6 +534,11 @@ public class PuzzleBord : MonoBehaviour
                     continue;
                 }
 
+                if (board[x, y].Type == PieceType.Ojama)
+                {
+                    continue;
+                }
+
                 List<Vector2Int> group = FloodFillGroup(new Vector2Int(x, y), visited);
                 if (group.Count >= 4)
                 {
@@ -523,9 +550,36 @@ public class PuzzleBord : MonoBehaviour
         return groups;
     }
 
-    private void ClearMatches(List<Vector2Int> matches)
+    private int ClearMatches(List<Vector2Int> matches)
     {
+        HashSet<Vector2Int> cellsToClear = new HashSet<Vector2Int>();
         foreach (Vector2Int cell in matches)
+        {
+            cellsToClear.Add(cell);
+        }
+
+        Vector2Int[] directions =
+        {
+            Vector2Int.up,
+            Vector2Int.down,
+            Vector2Int.left,
+            Vector2Int.right
+        };
+
+        foreach (Vector2Int cell in matches)
+        {
+            foreach (Vector2Int direction in directions)
+            {
+                Vector2Int adjacent = cell + direction;
+                Piece adjacentPiece = GetPieceAt(adjacent);
+                if (adjacentPiece != null && adjacentPiece.Type == PieceType.Ojama)
+                {
+                    cellsToClear.Add(adjacent);
+                }
+            }
+        }
+
+        foreach (Vector2Int cell in cellsToClear)
         {
             Piece piece = board[cell.x, cell.y];
             if (piece == null)
@@ -539,6 +593,7 @@ public class PuzzleBord : MonoBehaviour
         }
 
         RefreshAllSprites();
+        return cellsToClear.Count;
     }
 
     private System.Collections.IEnumerator BlinkMatches(List<Vector2Int> matches)
@@ -616,7 +671,7 @@ public class PuzzleBord : MonoBehaviour
             }
 
             Piece piece = board[current.x, current.y];
-            if (piece == null || piece.Type != type)
+            if (piece == null || piece.Type != type || piece.Type == PieceType.Ojama)
             {
                 continue;
             }
@@ -924,12 +979,23 @@ public class PuzzleBord : MonoBehaviour
             return;
         }
 
+        if (piece.Type == PieceType.Ojama)
+        {
+            piece.ApplySprite(spriteSet.GetSprite(piece.Type));
+            return;
+        }
+
         PuyoConnectionMask connections = GetConnections(gridPosition, piece.Type);
         piece.ApplySprite(spriteSet.GetSprite(piece.Type, connections));
     }
 
     private PuyoConnectionMask GetConnections(Vector2Int gridPosition, PieceType type)
     {
+        if (type == PieceType.Ojama)
+        {
+            return PuyoConnectionMask.None;
+        }
+
         PuyoConnectionMask connections = PuyoConnectionMask.None;
         if (IsSameTypeAt(gridPosition + Vector2Int.up, type))
         {
@@ -957,7 +1023,128 @@ public class PuzzleBord : MonoBehaviour
     private bool IsSameTypeAt(Vector2Int gridPosition, PieceType type)
     {
         Piece piece = GetPieceAt(gridPosition);
-        return piece != null && piece.Type == type;
+        return piece != null && piece.Type == type && piece.Type != PieceType.Ojama;
+    }
+
+    public void ReceiveGarbage(int amount)
+    {
+        if (amount <= 0 || gameOver)
+        {
+            return;
+        }
+
+        pendingGarbage += amount;
+    }
+
+    private System.Collections.IEnumerator DropGarbageRoutine()
+    {
+        if (pendingGarbage <= 0 || board == null)
+        {
+            yield break;
+        }
+
+        if (garbageDropDelay > 0f)
+        {
+            yield return new WaitForSeconds(garbageDropDelay);
+        }
+
+        int remaining = pendingGarbage;
+        pendingGarbage = 0;
+
+        List<int> availableColumns = new List<int>();
+        for (int x = 0; x < width; x++)
+        {
+            if (FindDropRow(x) >= 0)
+            {
+                availableColumns.Add(x);
+            }
+        }
+
+        while (remaining > 0 && availableColumns.Count > 0)
+        {
+            int columnIndex = Random.Range(0, availableColumns.Count);
+            int column = availableColumns[columnIndex];
+            int row = FindDropRow(column);
+            if (row < 0)
+            {
+                availableColumns.RemoveAt(columnIndex);
+                continue;
+            }
+
+            Vector2Int position = new Vector2Int(column, row);
+            Piece piece = CreatePiece(position, PieceType.Ojama);
+            board[column, row] = piece;
+            SetPieceStartAboveBoard(piece, column);
+            ApplyGridPosition(piece, position, fallAnimationDuration, false);
+            remaining--;
+
+            if (FindDropRow(column) < 0)
+            {
+                availableColumns.RemoveAt(columnIndex);
+            }
+        }
+
+        if (fallAnimationDuration > 0f)
+        {
+            yield return new WaitForSeconds(fallAnimationDuration);
+        }
+
+        if (remaining > 0)
+        {
+            SetGameOver("Game Over: no space for garbage puyos.");
+        }
+
+        RefreshAllSprites();
+    }
+
+    private int FindDropRow(int column)
+    {
+        if (column < 0 || column >= width)
+        {
+            return -1;
+        }
+
+        for (int y = 0; y < height; y++)
+        {
+            if (board[column, y] == null)
+            {
+                return y;
+            }
+        }
+
+        return -1;
+    }
+
+    private void SetPieceStartAboveBoard(Piece piece, int column)
+    {
+        if (piece == null)
+        {
+            return;
+        }
+
+        Vector2Int spawnPosition = new Vector2Int(column, height);
+        if (piece.IsUI)
+        {
+            piece.ApplyUISize(uiCellSize);
+            piece.ApplyUIPosition(GridToUI(spawnPosition));
+        }
+        else
+        {
+            piece.transform.position = GridToWorld(spawnPosition);
+        }
+    }
+
+    private void SetGameOver(string message)
+    {
+        if (gameOver)
+        {
+            return;
+        }
+
+        gameOver = true;
+        Debug.LogWarning(message);
+        isResolving = true;
+        OnGameOver?.Invoke();
     }
 
     private Piece GetPieceAt(Vector2Int gridPosition)
