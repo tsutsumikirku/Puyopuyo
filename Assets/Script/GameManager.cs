@@ -1,3 +1,4 @@
+using UnityEditor.SearchService;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -7,12 +8,37 @@ public class GameManager : MonoBehaviour
     public Character player2Character = Character.Milche;
     public AudioSource audioSource;
     public static GameManager instance;
+    [SerializeField] AudioClip InGameBGM;
+    [SerializeField] AudioClip OutGameBGM;
+    public SceneType CurrentSceneType
+    {
+        get { return currentSceneType; }
+        set
+        {
+            currentSceneType = value;
+            switch (currentSceneType)
+            {
+                case SceneType.InGame:
+                    audioSource.clip = InGameBGM;
+                    audioSource.loop = true;
+                    audioSource.Play();
+                    break;
+                case SceneType.OutGame:
+                    audioSource.clip = OutGameBGM;
+                    audioSource.loop = true;
+                    audioSource.Play();
+                    break;
+            }
+        }
+    }
+    private SceneType currentSceneType = SceneType.OutGame;
     private void Awake()
     {
         if (instance == null)
         {
             instance = this;
             DontDestroyOnLoad(gameObject);
+            CurrentSceneType = SceneType.OutGame;
         }
         else
         {
@@ -23,6 +49,11 @@ public class GameManager : MonoBehaviour
     {
         audioSource.PlayOneShot(clip);
     }
+}
+public enum SceneType
+{
+    OutGame,
+    InGame
 }
 public enum GameMode
 {
