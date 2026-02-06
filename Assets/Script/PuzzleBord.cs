@@ -503,7 +503,10 @@ public class PuzzleBord : MonoBehaviour
             }
         }
 
-        ApplyPendingGarbage();
+        if (pendingGarbage > 0)
+        {
+            yield return StartCoroutine(DropGarbageRoutine());
+        }
         isResolving = false;
         SpawnPair();
     }
@@ -1024,11 +1027,11 @@ public class PuzzleBord : MonoBehaviour
         pendingGarbage += amount;
     }
 
-    private void ApplyPendingGarbage()
+    private System.Collections.IEnumerator DropGarbageRoutine()
     {
         if (pendingGarbage <= 0 || board == null)
         {
-            return;
+            yield break;
         }
 
         int remaining = pendingGarbage;
@@ -1057,6 +1060,7 @@ public class PuzzleBord : MonoBehaviour
             Vector2Int position = new Vector2Int(column, row);
             Piece piece = CreatePiece(position, PieceType.Ojama);
             board[column, row] = piece;
+            SetPieceStartAboveBoard(piece, column);
             ApplyGridPosition(piece, position, fallAnimationDuration, false);
             remaining--;
 
@@ -1064,6 +1068,11 @@ public class PuzzleBord : MonoBehaviour
             {
                 availableColumns.RemoveAt(columnIndex);
             }
+        }
+
+        if (fallAnimationDuration > 0f)
+        {
+            yield return new WaitForSeconds(fallAnimationDuration);
         }
 
         if (remaining > 0)
@@ -1091,6 +1100,25 @@ public class PuzzleBord : MonoBehaviour
         }
 
         return -1;
+    }
+
+    private void SetPieceStartAboveBoard(Piece piece, int column)
+    {
+        if (piece == null)
+        {
+            return;
+        }
+
+        Vector2Int spawnPosition = new Vector2Int(column, height);
+        if (piece.IsUI)
+        {
+            piece.ApplyUISize(uiCellSize);
+            piece.ApplyUIPosition(GridToUI(spawnPosition));
+        }
+        else
+        {
+            piece.transform.position = GridToWorld(spawnPosition);
+        }
     }
 
     private Piece GetPieceAt(Vector2Int gridPosition)
