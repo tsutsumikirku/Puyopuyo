@@ -221,6 +221,9 @@ public class PuzzleBord : MonoBehaviour
         Piece pivotPiece = CreatePiece(pivotPosition, pivotType);
         Piece childPiece = CreatePiece(childPosition, childType);
 
+        SetPieceStartAboveBoard(childPiece, childPosition.x);
+        ApplyGridPosition(childPiece, childPosition, fallAnimationDuration, false);
+
         activePair = new ActivePair
         {
             Pivot = pivotPosition,
