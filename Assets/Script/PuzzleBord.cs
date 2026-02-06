@@ -17,6 +17,12 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private PuyoSpriteSet spriteSet;
     [SerializeField] private PuyoSpriteSet clearEffectSpriteSet;
 
+    [Header("Next Preview Settings")]
+    [SerializeField] private Transform nextPreviewRoot;
+    [SerializeField] private Vector2 nextPreviewCellSize = new Vector2(48f, 48f);
+    [SerializeField] private float nextPreviewSpacing = 0.9f;
+    [SerializeField] private bool showNextPreview = true;
+
     [Header("Fall Settings")]
     [SerializeField] private float fallInterval = 0.8f;
     [SerializeField] private float softDropInterval = 0.05f;
@@ -46,6 +52,11 @@ public class PuzzleBord : MonoBehaviour
 
     private Piece[,] board;
     private ActivePair activePair;
+    private PieceType nextPivotType;
+    private PieceType nextChildType;
+    private bool hasNextPair;
+    private Piece nextPreviewPivot;
+    private Piece nextPreviewChild;
     private float fallTimer;
     private bool gameOver;
     private bool isResolving;
@@ -58,6 +69,7 @@ public class PuzzleBord : MonoBehaviour
 
     private void Start()
     {
+        UpdateUISizing();
         InitializeBoard();
     }
 
@@ -94,16 +106,14 @@ public class PuzzleBord : MonoBehaviour
             return;
         }
 
-        if (centerBoardOnTransform)
-        {
-            AlignOriginToCenter();
-        }
+        UpdateUISizing();
 
         board = new Piece[width, height];
         fallTimer = 0f;
         gameOver = false;
         pendingGarbage = 0;
         BuildFrameTiles();
+        PrepareNextPair();
         SpawnPair();
     }
 
@@ -160,6 +170,7 @@ public class PuzzleBord : MonoBehaviour
     private void ClearBoard()
     {
         ClearFrameTiles();
+        ClearNextPreview();
 
         if (board != null)
         {
@@ -186,10 +197,16 @@ public class PuzzleBord : MonoBehaviour
         }
 
         activePair = default;
+        hasNextPair = false;
     }
 
     private void SpawnPair()
     {
+        if (!hasNextPair)
+        {
+            PrepareNextPair();
+        }
+
         Vector2Int pivotPosition = new Vector2Int(width / 2, height - 2);
         Vector2Int childPosition = pivotPosition + Vector2Int.up;
 
@@ -199,8 +216,8 @@ public class PuzzleBord : MonoBehaviour
             return;
         }
 
-        PieceType pivotType = spriteSet.GetRandomType();
-        PieceType childType = spriteSet.GetRandomType();
+        PieceType pivotType = nextPivotType;
+        PieceType childType = nextChildType;
         Piece pivotPiece = CreatePiece(pivotPosition, pivotType);
         Piece childPiece = CreatePiece(childPosition, childType);
 
@@ -212,7 +229,88 @@ public class PuzzleBord : MonoBehaviour
             ChildPiece = childPiece
         };
 
+        PrepareNextPair();
         RefreshAllSprites();
+    }
+
+    private void PrepareNextPair()
+    {
+        if (spriteSet == null)
+        {
+            return;
+        }
+
+        nextPivotType = spriteSet.GetRandomType();
+        nextChildType = spriteSet.GetRandomType();
+        hasNextPair = true;
+        UpdateNextPreview();
+    }
+
+    private void UpdateNextPreview()
+    {
+        if (!showNextPreview || nextPreviewRoot == null || piecePrefab == null || spriteSet == null)
+        {
+            ClearNextPreview();
+            return;
+        }
+
+        if (nextPreviewPivot == null)
+        {
+            nextPreviewPivot = CreatePreviewPiece();
+        }
+
+        if (nextPreviewChild == null)
+        {
+            nextPreviewChild = CreatePreviewPiece();
+        }
+
+        nextPreviewPivot.Initialize(nextPivotType, spriteSet.GetSprite(nextPivotType));
+        nextPreviewChild.Initialize(nextChildType, spriteSet.GetSprite(nextChildType));
+
+        ApplyPreviewPosition(nextPreviewPivot, Vector2Int.zero);
+        ApplyPreviewPosition(nextPreviewChild, Vector2Int.up);
+    }
+
+    private Piece CreatePreviewPiece()
+    {
+        Piece piece = Instantiate(piecePrefab, nextPreviewRoot, false);
+        piece.ApplySprite(null);
+        return piece;
+    }
+
+    private void ApplyPreviewPosition(Piece piece, Vector2Int gridPosition)
+    {
+        if (piece == null)
+        {
+            return;
+        }
+
+        if (piece.IsUI)
+        {
+            piece.ApplyUISize(nextPreviewCellSize);
+            Vector2 anchored = new Vector2(gridPosition.x * nextPreviewCellSize.x, gridPosition.y * nextPreviewCellSize.y);
+            piece.ApplyUIPosition(anchored);
+        }
+        else
+        {
+            piece.transform.localPosition = new Vector3(gridPosition.x * nextPreviewSpacing, gridPosition.y * nextPreviewSpacing, 0f);
+        }
+    }
+
+    private void ClearNextPreview()
+    {
+        if (nextPreviewPivot != null)
+        {
+            DestroyImmediate(nextPreviewPivot.gameObject);
+        }
+
+        if (nextPreviewChild != null)
+        {
+            DestroyImmediate(nextPreviewChild.gameObject);
+        }
+
+        nextPreviewPivot = null;
+        nextPreviewChild = null;
     }
 
     private Piece CreatePiece(Vector2Int gridPosition, PieceType type)
@@ -1194,12 +1292,50 @@ public class PuzzleBord : MonoBehaviour
         return piecePrefab.IsUI || piecePrefab.GetComponent<RectTransform>() != null;
     }
 
+    private void UpdateUISizing()
+    {
+        if (!UseUIGrid())
+        {
+            if (centerBoardOnTransform)
+            {
+                AlignOriginToCenter();
+            }
+
+            return;
+        }
+
+        if (!TryGetComponent(out RectTransform rectTransform))
+        {
+            if (centerBoardOnTransform)
+            {
+                AlignOriginToCenter();
+            }
+
+            return;
+        }
+
+        if (width > 0 && height > 0)
+        {
+            Rect rect = rectTransform.rect;
+            float cellWidth = rect.width / width;
+            float cellHeight = rect.height / height;
+            if (cellWidth > 0f && cellHeight > 0f)
+            {
+                uiCellSize = new Vector2(cellWidth, cellHeight);
+            }
+        }
+
+        AlignOriginToCenter();
+    }
+
     private void OnValidate()
     {
-        if (centerBoardOnTransform)
-        {
-            AlignOriginToCenter();
-        }
+        UpdateUISizing();
+    }
+
+    private void OnRectTransformDimensionsChange()
+    {
+        UpdateUISizing();
     }
 
     private struct ActivePair
