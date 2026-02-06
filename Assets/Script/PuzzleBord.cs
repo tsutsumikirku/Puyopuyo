@@ -207,10 +207,10 @@ public class PuzzleBord : MonoBehaviour
             PrepareNextPair();
         }
 
-        Vector2Int pivotPosition = new Vector2Int(width / 2, height - 2);
+        Vector2Int pivotPosition = new Vector2Int(width / 2, height - 1);
         Vector2Int childPosition = pivotPosition + Vector2Int.up;
 
-        if (!IsCellEmpty(pivotPosition) || !IsCellEmpty(childPosition))
+        if (!IsCellEmpty(pivotPosition) || (childPosition.y < height && !IsCellEmpty(childPosition)))
         {
             SetGameOver("Game Over: spawn position blocked.");
             return;
@@ -220,9 +220,6 @@ public class PuzzleBord : MonoBehaviour
         PieceType childType = nextChildType;
         Piece pivotPiece = CreatePiece(pivotPosition, pivotType);
         Piece childPiece = CreatePiece(childPosition, childType);
-
-        SetPieceStartAboveBoard(childPiece, childPosition.x);
-        ApplyGridPosition(childPiece, childPosition, fallAnimationDuration, false);
 
         activePair = new ActivePair
         {
