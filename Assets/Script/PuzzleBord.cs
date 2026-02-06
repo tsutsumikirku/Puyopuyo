@@ -28,6 +28,10 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float clearBlinkDuration = 0.3f;
     [SerializeField] private float clearBlinkInterval = 0.08f;
     [SerializeField] private float garbageDropDelay = 0.2f;
+    [SerializeField] private float gameOverFallDuration = 0.8f;
+    [SerializeField] private float gameOverFallDistance = 8f;
+    [SerializeField] private float gameOverRotationDegrees = 360f;
+    [SerializeField] private float gameOverDisappearDuration = 0.2f;
     [SerializeField] private PuyoClearEffect clearEffectPrefab;
     [SerializeField] private PuzzleBord opponentBoard;
 
@@ -193,8 +197,7 @@ public class PuzzleBord : MonoBehaviour
 
         if (!IsCellEmpty(pivotPosition) || !IsCellEmpty(childPosition))
         {
-            gameOver = true;
-            Debug.LogWarning("Game Over: spawn position blocked.");
+            SetGameOver("Game Over: spawn position blocked.");
             return;
         }
 
@@ -1090,8 +1093,7 @@ public class PuzzleBord : MonoBehaviour
 
         if (remaining > 0)
         {
-            gameOver = true;
-            Debug.LogWarning("Game Over: no space for garbage puyos.");
+            SetGameOver("Game Over: no space for garbage puyos.");
         }
 
         RefreshAllSprites();
@@ -1132,6 +1134,56 @@ public class PuzzleBord : MonoBehaviour
         {
             piece.transform.position = GridToWorld(spawnPosition);
         }
+    }
+
+    private void SetGameOver(string message)
+    {
+        if (gameOver)
+        {
+            return;
+        }
+
+        gameOver = true;
+        Debug.LogWarning(message);
+        StartCoroutine(GameOverRoutine());
+    }
+
+    private System.Collections.IEnumerator GameOverRoutine()
+    {
+        isResolving = true;
+
+        Vector3 startPosition = transform.position;
+        Quaternion startRotation = transform.rotation;
+        Vector3 startScale = transform.localScale;
+        Vector3 endPosition = startPosition + Vector3.down * gameOverFallDistance;
+        Quaternion endRotation = startRotation * Quaternion.Euler(0f, 0f, gameOverRotationDegrees);
+
+        float moveDuration = Mathf.Max(0.01f, gameOverFallDuration);
+        float elapsed = 0f;
+        while (elapsed < moveDuration)
+        {
+            float t = elapsed / moveDuration;
+            transform.position = Vector3.Lerp(startPosition, endPosition, t);
+            transform.rotation = Quaternion.Slerp(startRotation, endRotation, t);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.position = endPosition;
+        transform.rotation = endRotation;
+
+        float disappearDuration = Mathf.Max(0.01f, gameOverDisappearDuration);
+        elapsed = 0f;
+        while (elapsed < disappearDuration)
+        {
+            float t = elapsed / disappearDuration;
+            transform.localScale = Vector3.Lerp(startScale, Vector3.zero, t);
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        transform.localScale = Vector3.zero;
+        Destroy(gameObject);
     }
 
     private Piece GetPieceAt(Vector2Int gridPosition)
