@@ -9,6 +9,10 @@ public class GameManager : MonoBehaviour
     public AudioSource audioSource;
     public AudioSource seAudioSource;
     public static GameManager instance;
+    public int playerOneScore = 0;
+    public int playerTwoScore = 0;
+    public int playerOneCombo = 0;
+    public int playerTwoCombo = 0;
     [SerializeField] AudioClip InGameBGM;
     [SerializeField] AudioClip OutGameBGM;
     public SceneType CurrentSceneType

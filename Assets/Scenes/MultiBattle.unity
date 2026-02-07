@@ -438,6 +438,7 @@ MonoBehaviour:
   comboAudioClip: []
   chainSE: {fileID: 8300000, guid: 2dd76e2d2fae94df7a9190b620c52482, type: 3}
   durationToShowComboText: 0.5
+  fallSE: {fileID: 8300000, guid: 04986d231f80c44b093d7561c7d05021, type: 3}
 --- !u!114 &254572883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1552,6 +1553,7 @@ MonoBehaviour:
   comboAudioClip: []
   chainSE: {fileID: 8300000, guid: 2dd76e2d2fae94df7a9190b620c52482, type: 3}
   durationToShowComboText: 0.5
+  fallSE: {fileID: 8300000, guid: 04986d231f80c44b093d7561c7d05021, type: 3}
 --- !u!114 &1210165016
 MonoBehaviour:
   m_ObjectHideFlags: 0
