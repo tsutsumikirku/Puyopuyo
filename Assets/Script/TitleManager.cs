@@ -77,11 +77,11 @@ public class TitleManager : MonoBehaviour
             {
                 case 0:
                     GameManager.instance.currentGameMode = GameMode.Single;
-                    sceneChanger.ChangeSceneAsync("CharacterSelect").Forget();
+                    sceneChanger.ChangeSceneAsync("SingleCharacterSelect").Forget();
                     break;
                 case 1:
                     GameManager.instance.currentGameMode = GameMode.Versus;
-                    sceneChanger.ChangeSceneAsync("SingleCharacterSelect").Forget();
+                    sceneChanger.ChangeSceneAsync("MultiCharacterSelect").Forget();
                     break;
                 case 2:
                     
