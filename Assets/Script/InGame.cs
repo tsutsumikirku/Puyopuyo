@@ -23,6 +23,7 @@ public class InGame : MonoBehaviour
     [SerializeField] Image gameOverImage;
     [SerializeField] Image[] WinImage;
     [SerializeField] Image[] LoseImage;
+    [SerializeField] private AudioClip gameEnd;
     async UniTask Start()
     {
         GameManager.instance.CurrentSceneType = SceneType.Stop;

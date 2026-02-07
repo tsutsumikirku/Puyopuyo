@@ -3,6 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
+using System.Linq;
 
 public class PuzzleBord : MonoBehaviour
 {
@@ -57,6 +58,7 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] TextMeshProUGUI     comboText;
     [SerializeField] AudioClip[] comboAudioClip;
     [SerializeField] AudioClip chainSE;
+    [SerializeField] VoiceData chainVoiceData;
     [SerializeField] float durationToShowComboText = 0.5f;
     private Tween tween;
     private string baseComboText;
@@ -688,7 +690,7 @@ public class PuzzleBord : MonoBehaviour
                 comboText.gameObject.SetActive(false);
             });
             GameManager.instance.PlaySE(chainSE);
-            // if (currentChainCount - 1 < comboAudioClip.Length)
+            // if (currentChainCount - 1 < chainVoiceData.voiceinData.Length)
             // {
             //     AudioClip clip = comboAudioClip[currentChainCount - 1];
             //     if (clip != null)
@@ -1455,4 +1457,21 @@ public class PuzzleBord : MonoBehaviour
         public Piece PivotPiece;
         public Piece ChildPiece;
     }
+}
+[System.Serializable]
+public class VoiceData
+{
+    public VoiceInData[] voiceinData;
+}
+[System.Serializable]
+public class VoiceInData
+{
+    public string idol0;
+    public string phrase0;
+    public string idol1;
+    public string phrase1;
+    public string idol2;
+    public string phrase2;
+    public string idol3;
+    public string phrase3;
 }
