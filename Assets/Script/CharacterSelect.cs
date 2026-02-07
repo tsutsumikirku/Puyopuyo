@@ -13,6 +13,7 @@ public class CharacterSelect : MonoBehaviour
     public CharacterSelectButton[] characterImage;
     public Image SpaceKeyImage;
     public float spaceKeyPushTime = 0.5f;
+    bool isSpaceKeyPushed = false;
     [SerializeField] private SceneChanger1 sceneChanger;
 
     // Update is called once per frame
@@ -37,12 +38,14 @@ public class CharacterSelect : MonoBehaviour
     }
     void Update()
     {
+        if(isSpaceKeyPushed)return;
         if(Input.GetKey(KeyCode.Space))
         {
             spaceKeyPushTime -= Time.deltaTime;
             SpaceKeyImage.fillAmount = 1f - (spaceKeyPushTime / 0.5f);
             if(spaceKeyPushTime <= 0f)
             {
+                isSpaceKeyPushed = true;
                 switch (currentGameMode)
                 {
                     case GameMode.Single:
