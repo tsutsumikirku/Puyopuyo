@@ -69,7 +69,7 @@ public class PuzzleBord : MonoBehaviour
     private readonly List<GameObject> frameTiles = new List<GameObject>();
 
     public System.Action OnGameOver;
-    public System.Action<int> OnChainResolved;
+    public System.Action<int> OnChainTriggered;
 
     private void Start()
     {
@@ -663,6 +663,7 @@ public class PuzzleBord : MonoBehaviour
             }
 
             currentChainCount++;
+            OnChainTriggered?.Invoke(currentChainCount);
             int clearedThisChain = 0;
             foreach (List<Vector2Int> group in groups)
             {
@@ -692,11 +693,6 @@ public class PuzzleBord : MonoBehaviour
         if (pendingGarbage > 0)
         {
             yield return StartCoroutine(DropGarbageRoutine());
-        }
-
-        if (currentChainCount > 0)
-        {
-            OnChainResolved?.Invoke(currentChainCount);
         }
 
         currentChainCount = 0;
