@@ -43,7 +43,15 @@ public class CharacterSelect : MonoBehaviour
             SpaceKeyImage.fillAmount = 1f - (spaceKeyPushTime / 0.5f);
             if(spaceKeyPushTime <= 0f)
             {
-                sceneChanger.ChangeSceneAsync("MultiBattle").Forget();
+                switch (currentGameMode)
+                {
+                    case GameMode.Single:
+                        _ = sceneChanger.ChangeSceneAsync("StageSelect");
+                        break;
+                    case GameMode.Versus:
+                        _ = sceneChanger.ChangeSceneAsync("VersusStageSelect");
+                        break;
+                }
             }
         }
         else
