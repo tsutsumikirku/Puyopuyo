@@ -204,6 +204,7 @@ GameObject:
   m_Component:
   - component: {fileID: 254572881}
   - component: {fileID: 254572882}
+  - component: {fileID: 254572883}
   m_Layer: 5
   m_Name: GameObject (1)
   m_TagString: Untagged
@@ -284,6 +285,31 @@ MonoBehaviour:
   comboText: {fileID: 1639454821}
   comboAudioClip: []
   durationToShowComboText: 0.5
+--- !u!114 &254572883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 254572880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9d08945299bb4a5faf7261b7b28bdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: 0
+  playerImage: {fileID: 703433506}
+  characterSprites:
+  - {fileID: -1368578077799001809, guid: 9e11785f963174880bd6ccd932332ba9, type: 3}
+  - {fileID: 4738705760043661119, guid: b167cf4e53b1d42438fecfe34a87658c, type: 3}
+  - {fileID: -6164794191868243387, guid: 8dc9112fe714043208a0d518a54ff1d1, type: 3}
+  - {fileID: -4186632806901556356, guid: 513d1b2c3569a4024bcc462dea183d36, type: 3}
+  bordImage: {fileID: 1438476647}
+  bordSprites:
+  - {fileID: -7858114869556116397, guid: 73178da357b6a4073a2e4d3c6fba4b6c, type: 3}
+  - {fileID: -290930959484660996, guid: f2814fc3b6d044d0fb81c1087cab0a26, type: 3}
+  - {fileID: 8806355484023591912, guid: f2a6722e69950444b81f89f2b9674eb8, type: 3}
+  - {fileID: -654514513746032246, guid: 6fbe0815b65ab46db9c6630f13965b6e, type: 3}
 --- !u!1001 &256056792
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -298,7 +324,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2157590616337413777, guid: 13768da808c2afe44ac297e84f0be5e9, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6187945638577266812, guid: 13768da808c2afe44ac297e84f0be5e9, type: 3}
       propertyPath: m_Pivot.x
@@ -930,7 +956,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8987488448528863870, guid: fd9152cea9c2044468808394d33e1e75, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1139,6 +1165,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1210165014}
   - component: {fileID: 1210165015}
+  - component: {fileID: 1210165016}
   m_Layer: 5
   m_Name: GameObject
   m_TagString: Untagged
@@ -1219,6 +1246,31 @@ MonoBehaviour:
   comboText: {fileID: 1217965473}
   comboAudioClip: []
   durationToShowComboText: 0.5
+--- !u!114 &1210165016
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1210165013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9d08945299bb4a5faf7261b7b28bdcc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: 1
+  playerImage: {fileID: 1171709368}
+  characterSprites:
+  - {fileID: -1368578077799001809, guid: 9e11785f963174880bd6ccd932332ba9, type: 3}
+  - {fileID: 4738705760043661119, guid: b167cf4e53b1d42438fecfe34a87658c, type: 3}
+  - {fileID: -6164794191868243387, guid: 8dc9112fe714043208a0d518a54ff1d1, type: 3}
+  - {fileID: -4186632806901556356, guid: 513d1b2c3569a4024bcc462dea183d36, type: 3}
+  bordImage: {fileID: 407795873}
+  bordSprites:
+  - {fileID: -5361109378646834459, guid: 1ff54762fd0ac46d1b77bcea5e7b5606, type: 3}
+  - {fileID: -2569141596605865174, guid: db8540d2bd1c549a4a5ae7f39f04476a, type: 3}
+  - {fileID: -5683202086553470258, guid: 3c2135663b5fd4df3a0233d972d2b5c3, type: 3}
+  - {fileID: -5247447108807872287, guid: a7ec1017d9734455fb5e876ed3bc8e06, type: 3}
 --- !u!1 &1217965471
 GameObject:
   m_ObjectHideFlags: 0

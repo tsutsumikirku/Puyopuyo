@@ -46,10 +46,10 @@ public class CharacterSelect : MonoBehaviour
                 switch (currentGameMode)
                 {
                     case GameMode.Single:
-                        _ = sceneChanger.ChangeSceneAsync("StageSelect");
+                        _ = sceneChanger.ChangeSceneAsync("SingleBattle");
                         break;
                     case GameMode.Versus:
-                        _ = sceneChanger.ChangeSceneAsync("VersusStageSelect");
+                        _ = sceneChanger.ChangeSceneAsync("MultiBattle");
                         break;
                 }
             }
