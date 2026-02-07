@@ -673,7 +673,7 @@ public class PuzzleBord : MonoBehaviour
             {
                 break;
             }
-            currentChainCount++;
+            currentChainCount += CountDistinctClearTypes(groups);
             comboText.text = baseComboText.Replace("num", currentChainCount.ToString());
             tween?.Kill();
             comboText.gameObject.SetActive(true);
@@ -762,6 +762,27 @@ public class PuzzleBord : MonoBehaviour
         }
 
         return groups;
+    }
+
+    private int CountDistinctClearTypes(List<List<Vector2Int>> groups)
+    {
+        HashSet<PieceType> types = new HashSet<PieceType>();
+        foreach (List<Vector2Int> group in groups)
+        {
+            if (group.Count == 0)
+            {
+                continue;
+            }
+
+            Vector2Int cell = group[0];
+            Piece piece = board[cell.x, cell.y];
+            if (piece != null && piece.Type != PieceType.Ojama)
+            {
+                types.Add(piece.Type);
+            }
+        }
+
+        return Mathf.Max(1, types.Count);
     }
 
     private int ClearMatches(List<Vector2Int> matches)
