@@ -1,0 +1,429 @@
+fileFormatVersion: 2
+guid: 370094e7565c94f5a9d2abcbcaab0762
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 1286887685249211064
+    second: UI_InGame_rizaruto_Text2_0
+  - first:
+      213: -5826275908918875976
+    second: UI_InGame_rizaruto_Text2_1
+  - first:
+      213: -5573047039450498834
+    second: UI_InGame_rizaruto_Text2_2
+  - first:
+      213: 509638393116282017
+    second: UI_InGame_rizaruto_Text2_3
+  - first:
+      213: -4662935825674328560
+    second: UI_InGame_rizaruto_Text2_4
+  - first:
+      213: 7667995636722313549
+    second: UI_InGame_rizaruto_Text2_5
+  - first:
+      213: 7850186111321822336
+    second: UI_InGame_rizaruto_Text2_6
+  - first:
+      213: -2169424101256090584
+    second: UI_InGame_rizaruto_Text2_7
+  - first:
+      213: 6895426016447814444
+    second: UI_InGame_rizaruto_Text2_8
+  - first:
+      213: 2560726992638693852
+    second: UI_InGame_rizaruto_Text2_9
+  - first:
+      213: 5062201754282041838
+    second: UI_InGame_rizaruto_Text2_10
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 1
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Android
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: iOS
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_0
+      rect:
+        serializedVersion: 2
+        x: 70
+        y: 9
+        width: 41
+        height: 52
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8ba9a111881fbd110800000000000000
+      internalID: 1286887685249211064
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_1
+      rect:
+        serializedVersion: 2
+        x: 121
+        y: 12
+        width: 41
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b869750ee8e42fa0800000000000000
+      internalID: -5826275908918875976
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_2
+      rect:
+        serializedVersion: 2
+        x: 181
+        y: 11
+        width: 34
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee8b201be3f88a2b0800000000000000
+      internalID: -5573047039450498834
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_3
+      rect:
+        serializedVersion: 2
+        x: 239
+        y: 12
+        width: 33
+        height: 45
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1acc8991b69921700800000000000000
+      internalID: 509638393116282017
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_4
+      rect:
+        serializedVersion: 2
+        x: 275
+        y: 12
+        width: 17
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0162d34629ce94fb0800000000000000
+      internalID: -4662935825674328560
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_5
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 37
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d492412a7613a6a60800000000000000
+      internalID: 7667995636722313549
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_6
+      rect:
+        serializedVersion: 2
+        x: 322
+        y: 8
+        width: 48
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 084da0a1da671fc60800000000000000
+      internalID: 7850186111321822336
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_7
+      rect:
+        serializedVersion: 2
+        x: 326
+        y: 50
+        width: 45
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82ca5752648a4e1e0800000000000000
+      internalID: -2169424101256090584
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_8
+      rect:
+        serializedVersion: 2
+        x: 382
+        y: 12
+        width: 33
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2bdb5dad6971bf50800000000000000
+      internalID: 6895426016447814444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_9
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 13
+        width: 19
+        height: 34
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: cd1dbfae1a7898320800000000000000
+      internalID: 2560726992638693852
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: UI_InGame_rizaruto_Text2_10
+      rect:
+        serializedVersion: 2
+        x: 292
+        y: 13
+        width: 26
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ee12751ccad804640800000000000000
+      internalID: 5062201754282041838
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 5e97eb03825dee720800000000000000
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      UI_InGame_rizaruto_Text2_0: 1286887685249211064
+      UI_InGame_rizaruto_Text2_1: -5826275908918875976
+      UI_InGame_rizaruto_Text2_10: 5062201754282041838
+      UI_InGame_rizaruto_Text2_2: -5573047039450498834
+      UI_InGame_rizaruto_Text2_3: 509638393116282017
+      UI_InGame_rizaruto_Text2_4: -4662935825674328560
+      UI_InGame_rizaruto_Text2_5: 7667995636722313549
+      UI_InGame_rizaruto_Text2_6: 7850186111321822336
+      UI_InGame_rizaruto_Text2_7: -2169424101256090584
+      UI_InGame_rizaruto_Text2_8: 6895426016447814444
+      UI_InGame_rizaruto_Text2_9: 2560726992638693852
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

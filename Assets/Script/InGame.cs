@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using UnityEngine.UI;
 using UnityEngine;
 using DG.Tweening;
+using System.Threading.Tasks;
 
 public class InGame : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class InGame : MonoBehaviour
     [SerializeField] Image[] WinImage;
     [SerializeField] Image[] LoseImage;
     [SerializeField] private AudioClip gameEnd;
+    [SerializeField] private SceneChanger1 sceneChanger;
     async UniTask Start()
     {
         GameManager.instance.CurrentSceneType = SceneType.Stop;
@@ -72,11 +74,11 @@ public class InGame : MonoBehaviour
             gameBord.StartGame();
             twoPlayerGameBord.StartGame();
         }
-        gameBord.OnGameOver += PlayerOneGameOver;
+        gameBord.OnGameOver += () => _ = PlayerOneGameOver();
         if(GameManager.instance.currentGameMode == GameMode.Versus)
-        twoPlayerGameBord.OnGameOver += PlayerTwoGameOver;
+        twoPlayerGameBord.OnGameOver += () => _ = PlayerTwoGameOver();
     }
-    private void PlayerOneGameOver()
+    private async Task PlayerOneGameOver()
     {
         GameManager.instance.PlaySE(gameEnd);
         foreach(var piece in WinImage)
@@ -94,7 +96,10 @@ public class InGame : MonoBehaviour
             var beforeScale3 = gameOverImage.transform.localScale;
             gameOverImage.transform.localScale = Vector3.zero;
             gameOverImage.gameObject.SetActive(true);
+            gameOverImage.transform.SetAsLastSibling();
             gameOverImage.transform.DOScale(beforeScale3, sizeDuration).SetEase(Ease.OutBack);
+            await UniTask.WaitForSeconds(2f);
+            sceneChanger.ChangeSceneAsync("Result").Forget();
             return;
         }
         var beforeScale2 = WinImage[1].transform.localScale;
@@ -105,10 +110,12 @@ public class InGame : MonoBehaviour
         LoseImage[0].transform.localScale = Vector3.zero;
         LoseImage[0].gameObject.SetActive(true);
         LoseImage[0].transform.DOScale(beforeScale, sizeDuration).SetEase(Ease.OutBack);
+        await UniTask.WaitForSeconds(2f);
+        sceneChanger.ChangeSceneAsync("Result").Forget();
     }
-    private void PlayerTwoGameOver()
+    private async Task PlayerTwoGameOver()
     {
-        GameManager.instance.PlaySE(gameEnd);
+        GameManager.instance.PlaySE(gameEnd);   
         foreach(var piece in WinImage)
         {
             piece.transform.SetAsLastSibling();
@@ -127,5 +134,7 @@ public class InGame : MonoBehaviour
         LoseImage[1].transform.localScale = Vector3.zero;
         LoseImage[1].gameObject.SetActive(true);
         LoseImage[1].transform.DOScale(beforeScale, sizeDuration).SetEase(Ease.OutBack);
+        await UniTask.WaitForSeconds(2f);
+        sceneChanger.ChangeSceneAsync("Result").Forget();
     }
 }

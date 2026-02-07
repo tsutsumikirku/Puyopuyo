@@ -50,7 +50,6 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private KeyCode moveLeftKey = KeyCode.LeftArrow;
     [SerializeField] private KeyCode moveRightKey = KeyCode.RightArrow;
     [SerializeField] private KeyCode softDropKey = KeyCode.DownArrow;
-    [SerializeField] private KeyCode hardDropKey = KeyCode.Space;
     [SerializeField] private KeyCode rotateClockwiseKey = KeyCode.X;
     [SerializeField] private KeyCode rotateCounterClockwiseKey = KeyCode.Z;
 
@@ -183,16 +182,6 @@ public class PuzzleBord : MonoBehaviour
         if (Input.GetKeyDown(moveRightKey))
         {
             TryMoveActive(Vector2Int.right);
-        }
-
-        if (Input.GetKeyDown(hardDropKey))
-        {
-            while (TryMoveActive(Vector2Int.down))
-            {
-            }
-
-            LockActivePair();
-            return;
         }
 
         if (Input.GetKeyDown(rotateClockwiseKey))
@@ -694,6 +683,7 @@ public class PuzzleBord : MonoBehaviour
             comboText.text = baseComboText.Replace("num", currentChainCount.ToString());
             tween?.Kill();
             comboText.gameObject.SetActive(true);
+            comboText.transform.SetAsLastSibling();
             comboText.transform.localScale = Vector3.zero;
             tween = comboText.transform.DOScale(beforeScale, durationToShowComboText).SetEase(Ease.OutBack).OnComplete(() =>
             {
