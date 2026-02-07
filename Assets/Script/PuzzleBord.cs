@@ -64,6 +64,9 @@ public class PuzzleBord : MonoBehaviour
     private string baseComboText;
     private Vector3 beforeScale;
 
+    [Header("Player Settings")]
+    [SerializeField] private bool isPlayerOne = true;
+
     [Header("Sound Settings")]
     [SerializeField] private AudioClip fallSE;
 
@@ -80,6 +83,9 @@ public class PuzzleBord : MonoBehaviour
     private bool isRunning;
     private int pendingGarbage;
     private int currentChainCount;
+    private int totalScore;
+    private int highestChainCount;
+    private bool resultsSaved;
     private readonly Dictionary<Piece, Coroutine> moveCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly Dictionary<Piece, Coroutine> bounceCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly List<GameObject> frameTiles = new List<GameObject>();
@@ -132,6 +138,7 @@ public class PuzzleBord : MonoBehaviour
         isRunning = false;
         isResolving = true;
         StopAllCoroutines();
+        SaveResultsToGameManager();
     }
 
     private void InitializeBoard()
@@ -158,6 +165,9 @@ public class PuzzleBord : MonoBehaviour
         isResolving = false;
         pendingGarbage = 0;
         currentChainCount = 0;
+        totalScore = 0;
+        highestChainCount = 0;
+        resultsSaved = false;
         BuildFrameTiles();
         PrepareNextPair();
         SpawnPair();
@@ -680,7 +690,7 @@ public class PuzzleBord : MonoBehaviour
             {
                 break;
             }
-            currentChainCount += CountDistinctClearTypes(groups);
+            currentChainCount += 1;
             comboText.text = baseComboText.Replace("num", currentChainCount.ToString());
             tween?.Kill();
             comboText.gameObject.SetActive(true);
@@ -711,6 +721,13 @@ public class PuzzleBord : MonoBehaviour
             {
                 yield return StartCoroutine(BlinkMatches(group));
                 clearedThisChain += ClearMatches(group);
+            }
+
+            int scoreToAdd = clearedThisChain * 10 * currentChainCount;
+            totalScore += scoreToAdd;
+            if (currentChainCount > highestChainCount)
+            {
+                highestChainCount = currentChainCount;
             }
 
             int canceledGarbage = Mathf.Min(pendingGarbage, clearedThisChain);
@@ -1354,7 +1371,28 @@ public class PuzzleBord : MonoBehaviour
         gameOver = true;
         Debug.LogWarning(message);
         isResolving = true;
+        SaveResultsToGameManager();
         OnGameOver?.Invoke();
+    }
+
+    private void SaveResultsToGameManager()
+    {
+        if (resultsSaved || GameManager.instance == null)
+        {
+            return;
+        }
+
+        resultsSaved = true;
+        if (isPlayerOne)
+        {
+            GameManager.instance.playerOneScore = totalScore;
+            GameManager.instance.playerOneCombo = highestChainCount;
+        }
+        else
+        {
+            GameManager.instance.playerTwoScore = totalScore;
+            GameManager.instance.playerTwoCombo = highestChainCount;
+        }
     }
 
     private Piece GetPieceAt(Vector2Int gridPosition)
