@@ -62,6 +62,9 @@ public class PuzzleBord : MonoBehaviour
     private string baseComboText;
     private Vector3 beforeScale;
 
+    [Header("Sound Settings")]
+    [SerializeField] private AudioClip fallSE;
+
     private Piece[,] board;
     private ActivePair activePair;
     private PieceType nextPivotType;
@@ -652,6 +655,7 @@ public class PuzzleBord : MonoBehaviour
         activePair = default;
 
         RefreshAllSprites();
+        PlayFallSE();
         StartBounceCoroutine(pivotPiece, pivotPiece != null && pivotPiece.IsUI);
         StartBounceCoroutine(childPiece, childPiece != null && childPiece.IsUI);
         StartCoroutine(ResolveAfterLockRoutine());
@@ -954,9 +958,20 @@ public class PuzzleBord : MonoBehaviour
         if (moved)
         {
             RefreshAllSprites();
+            PlayFallSE();
         }
 
         return moved;
+    }
+
+    private void PlayFallSE()
+    {
+        if (fallSE == null || GameManager.instance == null)
+        {
+            return;
+        }
+
+        GameManager.instance.PlaySE(fallSE);
     }
 
     private void ApplyUIPosition(Piece piece, Vector2 target, bool animate)
