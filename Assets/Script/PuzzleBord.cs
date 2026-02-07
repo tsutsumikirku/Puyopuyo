@@ -61,21 +61,28 @@ public class PuzzleBord : MonoBehaviour
     private float fallTimer;
     private bool gameOver;
     private bool isResolving;
+    private bool isRunning;
     private int pendingGarbage;
+    private int currentChainCount;
     private readonly Dictionary<Piece, Coroutine> moveCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly Dictionary<Piece, Coroutine> bounceCoroutines = new Dictionary<Piece, Coroutine>();
     private readonly List<GameObject> frameTiles = new List<GameObject>();
 
     public System.Action OnGameOver;
+    public System.Action<int> OnChainResolved;
 
     private void Start()
     {
         UpdateUISizing();
-        InitializeBoard();
     }
 
     private void Update()
     {
+        if (!isRunning)
+        {
+            return;
+        }
+
         if (gameOver || isResolving || activePair.PivotPiece == null)
         {
             return;
@@ -88,7 +95,25 @@ public class PuzzleBord : MonoBehaviour
     [ContextMenu("Restart Game")]
     public void RestartGame()
     {
+        StartGame();
+    }
+
+    public void StartGame()
+    {
+        isRunning = true;
         InitializeBoard();
+    }
+
+    public void StopGame()
+    {
+        if (!isRunning)
+        {
+            return;
+        }
+
+        isRunning = false;
+        isResolving = true;
+        StopAllCoroutines();
     }
 
     private void InitializeBoard()
@@ -112,7 +137,9 @@ public class PuzzleBord : MonoBehaviour
         board = new Piece[width, height];
         fallTimer = 0f;
         gameOver = false;
+        isResolving = false;
         pendingGarbage = 0;
+        currentChainCount = 0;
         BuildFrameTiles();
         PrepareNextPair();
         SpawnPair();
@@ -635,6 +662,7 @@ public class PuzzleBord : MonoBehaviour
                 break;
             }
 
+            currentChainCount++;
             int clearedThisChain = 0;
             foreach (List<Vector2Int> group in groups)
             {
@@ -665,6 +693,13 @@ public class PuzzleBord : MonoBehaviour
         {
             yield return StartCoroutine(DropGarbageRoutine());
         }
+
+        if (currentChainCount > 0)
+        {
+            OnChainResolved?.Invoke(currentChainCount);
+        }
+
+        currentChainCount = 0;
         isResolving = false;
         SpawnPair();
     }
@@ -1128,51 +1163,7 @@ public class PuzzleBord : MonoBehaviour
             return;
         }
 
-        if (piece.Type == PieceType.Ojama)
-        {
-            piece.ApplySprite(spriteSet.GetSprite(piece.Type));
-            return;
-        }
-
-        PuyoConnectionMask connections = GetConnections(gridPosition, piece.Type);
-        piece.ApplySprite(spriteSet.GetSprite(piece.Type, connections));
-    }
-
-    private PuyoConnectionMask GetConnections(Vector2Int gridPosition, PieceType type)
-    {
-        if (type == PieceType.Ojama)
-        {
-            return PuyoConnectionMask.None;
-        }
-
-        PuyoConnectionMask connections = PuyoConnectionMask.None;
-        if (IsSameTypeAt(gridPosition + Vector2Int.up, type))
-        {
-            connections |= PuyoConnectionMask.Up;
-        }
-
-        if (IsSameTypeAt(gridPosition + Vector2Int.down, type))
-        {
-            connections |= PuyoConnectionMask.Down;
-        }
-
-        if (IsSameTypeAt(gridPosition + Vector2Int.left, type))
-        {
-            connections |= PuyoConnectionMask.Left;
-        }
-
-        if (IsSameTypeAt(gridPosition + Vector2Int.right, type))
-        {
-            connections |= PuyoConnectionMask.Right;
-        }
-
-        return connections;
-    }
-
-    private bool IsSameTypeAt(Vector2Int gridPosition, PieceType type)
-    {
-        Piece piece = GetPieceAt(gridPosition);
-        return piece != null && piece.Type == type && piece.Type != PieceType.Ojama;
+        piece.ApplySprite(spriteSet.GetSprite(piece.Type));
     }
 
     public void ReceiveGarbage(int amount)
