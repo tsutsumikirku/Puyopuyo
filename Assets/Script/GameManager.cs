@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public Character playerCharacter = Character.Milche;
     public Character player2Character = Character.Milche;
     public AudioSource audioSource;
+    public AudioSource seAudioSource;
     public static GameManager instance;
     [SerializeField] AudioClip InGameBGM;
     [SerializeField] AudioClip OutGameBGM;
@@ -28,6 +29,9 @@ public class GameManager : MonoBehaviour
                     audioSource.loop = true;
                     audioSource.Play();
                     break;
+                case SceneType.Stop:
+                    audioSource.Pause();
+                    break;
             }
         }
     }
@@ -47,13 +51,14 @@ public class GameManager : MonoBehaviour
     }
     public void PlaySE(AudioClip clip)
     {
-        audioSource.PlayOneShot(clip);
+        seAudioSource.PlayOneShot(clip);
     }
 }
 public enum SceneType
 {
     OutGame,
-    InGame
+    InGame,
+    Stop
 }
 public enum GameMode
 {

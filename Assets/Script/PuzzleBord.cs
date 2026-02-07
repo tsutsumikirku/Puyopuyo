@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
+using TMPro;
 
 public class PuzzleBord : MonoBehaviour
 {
@@ -51,6 +53,14 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private KeyCode rotateClockwiseKey = KeyCode.X;
     [SerializeField] private KeyCode rotateCounterClockwiseKey = KeyCode.Z;
 
+    [Header("Combo Settings")]
+    [SerializeField] TextMeshProUGUI     comboText;
+    [SerializeField] AudioClip[] comboAudioClip;
+    [SerializeField] float durationToShowComboText = 0.5f;
+    private Tween tween;
+    private string baseComboText;
+    private Vector3 beforeScale;
+
     private Piece[,] board;
     private ActivePair activePair;
     private PieceType nextPivotType;
@@ -74,6 +84,8 @@ public class PuzzleBord : MonoBehaviour
     private void Start()
     {
         UpdateUISizing();
+        baseComboText = comboText.text;
+        beforeScale = comboText.transform.localScale;
     }
 
     private void Update()
@@ -661,9 +673,31 @@ public class PuzzleBord : MonoBehaviour
             {
                 break;
             }
-
             currentChainCount++;
-            OnChainTriggered?.Invoke(currentChainCount);
+            comboText.text = baseComboText.Replace("num", currentChainCount.ToString());
+            tween?.Kill();
+            comboText.gameObject.SetActive(true);
+            comboText.transform.localScale = Vector3.zero;
+            tween = comboText.transform.DOScale(beforeScale, durationToShowComboText).SetEase(Ease.OutBack).OnComplete(() =>
+            {
+                comboText.gameObject.SetActive(false);
+            });
+            // if (currentChainCount - 1 < comboAudioClip.Length)
+            // {
+            //     AudioClip clip = comboAudioClip[currentChainCount - 1];
+            //     if (clip != null)
+            //     {
+            //         GameManager.instance.PlaySE(clip);
+            //     }
+            // }
+            // else
+            // {
+            //     AudioClip clip = comboAudioClip[comboAudioClip.Length - 1];
+            //     if (clip != null)
+            //     {
+            //         GameManager.instance.PlaySE(clip);
+            //     }
+            // }
             int clearedThisChain = 0;
             foreach (List<Vector2Int> group in groups)
             {
