@@ -78,6 +78,7 @@ public class InGame : MonoBehaviour
     }
     private void PlayerOneGameOver()
     {
+        GameManager.instance.PlaySE(gameEnd);
         foreach(var piece in WinImage)
         {
             piece.transform.SetAsLastSibling();
@@ -107,6 +108,7 @@ public class InGame : MonoBehaviour
     }
     private void PlayerTwoGameOver()
     {
+        GameManager.instance.PlaySE(gameEnd);
         foreach(var piece in WinImage)
         {
             piece.transform.SetAsLastSibling();
