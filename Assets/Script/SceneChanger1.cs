@@ -12,6 +12,10 @@ public class SceneChanger1 : MonoBehaviour
         SeAudioSource.clip = sceneChangeSE;
         SeAudioSource.Play();
     }
+    public void ChangeScene(string sceneName)
+    {
+        _ = ChangeSceneAsync(sceneName);
+    }
     public async UniTask ChangeSceneAsync(string sceneName)
     {
         if (isChangingScene) return;

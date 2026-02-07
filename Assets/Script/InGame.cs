@@ -20,6 +20,9 @@ public class InGame : MonoBehaviour
     [SerializeField] float sizeDuration = 0.5f;
     [SerializeField] private PuzzleBord gameBord;
     [SerializeField] private PuzzleBord twoPlayerGameBord;
+    [SerializeField] Image gameOverImage;
+    [SerializeField] Image[] WinImage;
+    [SerializeField] Image[] LoseImage;
     async UniTask Start()
     {
         GameManager.instance.CurrentSceneType = SceneType.Stop;
@@ -68,12 +71,58 @@ public class InGame : MonoBehaviour
             gameBord.StartGame();
             twoPlayerGameBord.StartGame();
         }
+        gameBord.OnGameOver += PlayerOneGameOver;
+        if(GameManager.instance.currentGameMode == GameMode.Versus)
+        twoPlayerGameBord.OnGameOver += PlayerTwoGameOver;
     }
     private void PlayerOneGameOver()
     {
-        
+        foreach(var piece in WinImage)
+        {
+            piece.transform.SetAsLastSibling();
+        }
+        foreach(var piece in LoseImage)
+        {
+            piece.transform.SetAsLastSibling();
+        }
+        gameBord?.StopGame();
+        twoPlayerGameBord?.StopGame();
+        if( GameManager.instance.currentGameMode == GameMode.Single) 
+        {
+            var beforeScale3 = gameOverImage.transform.localScale;
+            gameOverImage.transform.localScale = Vector3.zero;
+            gameOverImage.gameObject.SetActive(true);
+            gameOverImage.transform.DOScale(beforeScale3, sizeDuration).SetEase(Ease.OutBack);
+            return;
+        }
+        var beforeScale2 = WinImage[1].transform.localScale;
+        WinImage[1].transform.localScale = Vector3.zero;
+        WinImage[1].gameObject.SetActive(true);
+        WinImage[1].transform.DOScale(beforeScale2, sizeDuration).SetEase(Ease.OutBack);
+        var beforeScale = LoseImage[0].transform.localScale;
+        LoseImage[0].transform.localScale = Vector3.zero;
+        LoseImage[0].gameObject.SetActive(true);
+        LoseImage[0].transform.DOScale(beforeScale, sizeDuration).SetEase(Ease.OutBack);
     }
     private void PlayerTwoGameOver()
     {
+        foreach(var piece in WinImage)
+        {
+            piece.transform.SetAsLastSibling();
+        }
+        foreach(var piece in LoseImage)
+        {
+            piece.transform.SetAsLastSibling();
+        }
+        gameBord?.StopGame();
+        twoPlayerGameBord?.StopGame();
+        var beforeScale2 = WinImage[1].transform.localScale;
+        WinImage[0].transform.localScale = Vector3.zero;
+        WinImage[0].gameObject.SetActive(true);
+        WinImage[0].transform.DOScale(beforeScale2, sizeDuration).SetEase(Ease.OutBack);
+        var beforeScale = LoseImage[0].transform.localScale;
+        LoseImage[1].transform.localScale = Vector3.zero;
+        LoseImage[1].gameObject.SetActive(true);
+        LoseImage[1].transform.DOScale(beforeScale, sizeDuration).SetEase(Ease.OutBack);
     }
 }

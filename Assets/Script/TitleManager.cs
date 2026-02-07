@@ -29,7 +29,7 @@ public class TitleManager : MonoBehaviour
     }
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.DownArrow))
+        if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
         {
             audioSource.PlayOneShot(decisionSE);
             selection++;
@@ -50,7 +50,7 @@ public class TitleManager : MonoBehaviour
                 }
         }
         }
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
             audioSource.PlayOneShot(decisionSE);
             selection--;
@@ -87,6 +87,23 @@ public class TitleManager : MonoBehaviour
                     
                     break;
             }
+        }
+    }
+    public void ChangeScene(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                GameManager.instance.currentGameMode = GameMode.Single;
+                sceneChanger.ChangeSceneAsync("SingleCharacterSelect").Forget();
+                break;
+            case 1:
+                GameManager.instance.currentGameMode = GameMode.Versus;
+                sceneChanger.ChangeSceneAsync("MultiCharacterSelect").Forget();
+                break;
+            case 2:
+                
+                break;
         }
     }
 }

@@ -56,6 +56,7 @@ public class PuzzleBord : MonoBehaviour
     [Header("Combo Settings")]
     [SerializeField] TextMeshProUGUI     comboText;
     [SerializeField] AudioClip[] comboAudioClip;
+    [SerializeField] AudioClip chainSE;
     [SerializeField] float durationToShowComboText = 0.5f;
     private Tween tween;
     private string baseComboText;
@@ -682,6 +683,7 @@ public class PuzzleBord : MonoBehaviour
             {
                 comboText.gameObject.SetActive(false);
             });
+            GameManager.instance.PlaySE(chainSE);
             // if (currentChainCount - 1 < comboAudioClip.Length)
             // {
             //     AudioClip clip = comboAudioClip[currentChainCount - 1];
