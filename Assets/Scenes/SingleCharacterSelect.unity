@@ -1585,7 +1585,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 35.999992, y: 36.999985}
+  m_AnchoredPosition: {x: 55, y: 36.999985}
   m_SizeDelta: {x: 101.405, y: 81.7365}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &638722773
@@ -1757,7 +1757,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 130, y: 0}
+  m_AnchoredPosition: {x: 144.3, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &675205659
@@ -2618,7 +2618,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -81, y: 37}
+  m_AnchoredPosition: {x: -55, y: 37}
   m_SizeDelta: {x: 101.405, y: 81.7365}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &757854010
@@ -4789,7 +4789,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.0000019073, y: -148}
+  m_AnchoredPosition: {x: 0, y: -148}
   m_SizeDelta: {x: 152.4916, y: 61.2562}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1577417734
@@ -5279,7 +5279,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -37.000008, y: -54.868015}
+  m_AnchoredPosition: {x: -55, y: -54.868015}
   m_SizeDelta: {x: 101.405, y: 81.7365}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1733628386
@@ -5720,6 +5720,10 @@ MonoBehaviour:
   player2Character: 1
   audioSource: {fileID: 1871189272}
   seAudioSource: {fileID: 0}
+  playerOneScore: 0
+  playerTwoScore: 0
+  playerOneCombo: 0
+  playerTwoCombo: 0
   InGameBGM: {fileID: 8300000, guid: e42e7911c90f060498a658a332001269, type: 3}
   OutGameBGM: {fileID: 8300000, guid: 9eb2b30fc14a3064b87e07f1638cf3c9, type: 3}
 --- !u!4 &1871189274
@@ -5924,7 +5928,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 82.409996, y: -54.868015}
+  m_AnchoredPosition: {x: 55, y: -54.868015}
   m_SizeDelta: {x: 101.405, y: 81.7365}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2089655058
@@ -6272,6 +6276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e7aa56d1030ad54ebd9e93605f01aad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SoundPlayed: 1
   fadeOutAnimationPlayer: {fileID: 1332565196}
   SeAudioSource: {fileID: 2112228981}
   sceneChangeSE: {fileID: 8300000, guid: 49f34f27fc2b2bb4b8e1c619b2416fa3, type: 3}

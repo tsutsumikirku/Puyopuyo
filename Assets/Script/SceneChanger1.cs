@@ -4,12 +4,14 @@ using YourMaidTools;
 public class SceneChanger1 : MonoBehaviour
 {
     private bool isChangingScene = false;
+    [SerializeField]private bool SoundPlayed = true;
     [SerializeField] private YMAnimationPlayer fadeOutAnimationPlayer;
     [SerializeField] private AudioSource SeAudioSource;
     [SerializeField]private AudioClip sceneChangeSE;
     void Start()
     {
         SeAudioSource.clip = sceneChangeSE;
+        if (!SoundPlayed) return;
         SeAudioSource.Play();
     }
     public void ChangeScene(string sceneName)
