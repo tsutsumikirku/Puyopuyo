@@ -11,7 +11,11 @@ public class SceneChanger1 : MonoBehaviour
     void Start()
     {
         SeAudioSource.clip = sceneChangeSE;
-        if (!SoundPlayed) return;
+        if (!GameManager.instance.sadawd)
+        {
+            GameManager.instance.sadawd = true;
+            return;
+        } 
         SeAudioSource.Play();
     }
     public void ChangeScene(string sceneName)

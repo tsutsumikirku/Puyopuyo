@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public int playerTwoScore = 0;
     public int playerOneCombo = 0;
     public int playerTwoCombo = 0;
+    public bool sadawd = false;
     [SerializeField] AudioClip InGameBGM;
     [SerializeField] AudioClip OutGameBGM;
     public SceneType CurrentSceneType

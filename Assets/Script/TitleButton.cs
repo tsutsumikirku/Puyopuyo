@@ -9,6 +9,7 @@ public class TitleButton : MonoBehaviour
     RectTransform rect;
     Vector3 originalScale;
     Vector2 originalAnchoredPosition;
+    Vector2 originalSizeDelta;
 
     private void Awake()
     {
@@ -20,6 +21,7 @@ public class TitleButton : MonoBehaviour
         }
         originalScale = rect.localScale;
         originalAnchoredPosition = rect.anchoredPosition;
+        originalSizeDelta = rect.sizeDelta;
     }
 
     public void Select()
@@ -34,7 +36,7 @@ public class TitleButton : MonoBehaviour
         }
 
         rect.DOKill();
-        rect.DOScaleX(originalScale.x * 1.2f, 0.2f);
+        rect.DOSizeDelta(new Vector2(originalSizeDelta.x * 1.2f, originalSizeDelta.y), 0.2f);
         rect.DOAnchorPosX(originalAnchoredPosition.x + 20f, 0.2f);
     }
 
@@ -50,7 +52,7 @@ public class TitleButton : MonoBehaviour
         }
 
         rect.DOKill();
-        rect.DOScaleX(originalScale.x, 0.2f);
+        rect.DOSizeDelta(originalSizeDelta, 0.2f);
         rect.DOAnchorPosX(originalAnchoredPosition.x, 0.2f);
     }
 }
