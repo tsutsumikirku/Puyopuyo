@@ -6,7 +6,7 @@ using Cysharp.Threading.Tasks;
 public class CharacterSelect : MonoBehaviour
 {
     public GameMode currentGameMode;
-    public Character playerCharacter = Character.Milche;
+    public Character playerCharacter = Character.Ruche;
     public Character player2Character = Character.Milche;
     public CharacterSelectCharacter characterSelectCharacter;
     public CharacterSelectCharacter secondCharacterSelectCharacter; 

@@ -13,16 +13,19 @@ EditorBuildSettings:
     guid: 8c9cfa26abfee488c85f1582747f6a02
   - enabled: 1
     path: Assets/Scenes/SingleBattle.unity
+    guid: 6e7e47f2b9fc94916bec4a2899d95bd9
+  - enabled: 0
+    path: Assets/Scenes/MultiBattle 1.unity
     guid: dbc726b9d1cb8954fad96f492a2b945d
   - enabled: 1
     path: Assets/Scenes/SingleCharacterSelect.unity
     guid: 3e5906b794eed4840b380079e7f13836
   - enabled: 1
     path: Assets/Scenes/MultiCharacterSelect.unity
-    guid: b2e417fe5238e4fd7a4b8adde0a15238
+    guid: 3bf2650331ef24aa58317ea05aee565b
   - enabled: 1
     path: Assets/Scenes/MultiCharacterSelect.unity
-    guid: b2e417fe5238e4fd7a4b8adde0a15238
+    guid: 3bf2650331ef24aa58317ea05aee565b
   - enabled: 1
     path: Assets/Scenes/Result.unity
     guid: aa0703037bfa34a549408fa2b8cb7ef5
