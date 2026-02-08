@@ -329,7 +329,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2157590616337413777, guid: 13768da808c2afe44ac297e84f0be5e9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6187945638577266812, guid: 13768da808c2afe44ac297e84f0be5e9, type: 3}
       propertyPath: m_Pivot.x
@@ -478,7 +478,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -220027804961079542, guid: d1a1ebadcdefb4bb39f894ef38294466, type: 3}
+  m_Sprite: {fileID: 4558795792373242, guid: 99f44633eacd0b742a9b563b2bd86c55, type: 3}
   m_Type: 0
   m_PreserveAspect: 1
   m_FillCenter: 1
@@ -890,6 +890,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4e7aa56d1030ad54ebd9e93605f01aad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  SoundPlayed: 1
   fadeOutAnimationPlayer: {fileID: 537673386}
   SeAudioSource: {fileID: 537673387}
   sceneChangeSE: {fileID: 8300000, guid: 49f34f27fc2b2bb4b8e1c619b2416fa3, type: 3}
@@ -1795,6 +1796,7 @@ MonoBehaviour:
   playerTwoScore: 0
   playerOneCombo: 0
   playerTwoCombo: 0
+  sadawd: 0
   InGameBGM: {fileID: 8300000, guid: e42e7911c90f060498a658a332001269, type: 3}
   OutGameBGM: {fileID: 8300000, guid: 9eb2b30fc14a3064b87e07f1638cf3c9, type: 3}
 --- !u!4 &1596405000
