@@ -1,6 +1,4 @@
 using Cysharp.Threading.Tasks;
-using Microsoft.Unity.VisualStudio.Editor;
-using UnityEditor.SearchService;
 using UnityEngine;
 
 public class TitleManager : MonoBehaviour
