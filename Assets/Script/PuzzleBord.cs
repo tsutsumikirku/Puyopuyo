@@ -38,6 +38,7 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private float clearBlinkDuration = 0.3f;
     [SerializeField] private float clearBlinkInterval = 0.08f;
     [SerializeField] private float garbageDropDelay = 0.2f;
+    [SerializeField, Min(0f)] private float garbageSendMultiplier = 1f;
     [SerializeField] private PuyoClearEffect clearEffectPrefab;
     [SerializeField] private PuzzleBord opponentBoard;
 
@@ -804,7 +805,8 @@ public class PuzzleBord : MonoBehaviour
                 pendingGarbage -= canceledGarbage;
             }
 
-            int sendGarbage = clearedThisChain - canceledGarbage;
+            int sendGarbageBase = clearedThisChain - canceledGarbage;
+            int sendGarbage = Mathf.FloorToInt(sendGarbageBase * garbageSendMultiplier);
             if (opponentBoard != null && sendGarbage > 0)
             {
                 opponentBoard.ReceiveGarbage(sendGarbage);
