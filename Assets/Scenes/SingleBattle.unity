@@ -342,7 +342,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2157590616337413777, guid: 13768da808c2afe44ac297e84f0be5e9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6187945638577266812, guid: 13768da808c2afe44ac297e84f0be5e9, type: 3}
       propertyPath: m_Pivot.x
@@ -2711,6 +2711,8 @@ MonoBehaviour:
   LoseImage: []
   gameEnd: {fileID: 8300000, guid: 42a6221f848e649c5a3ba139acdc9374, type: 3}
   sceneChanger: {fileID: 537673388}
+  PlayerOneWinImage: {fileID: 0}
+  PlayerTwoWinImage: {fileID: 0}
 --- !u!4 &1935389053
 Transform:
   m_ObjectHideFlags: 0
