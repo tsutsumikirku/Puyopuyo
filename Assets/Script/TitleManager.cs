@@ -11,6 +11,7 @@ public class TitleManager : MonoBehaviour
     [SerializeField] SceneChanger1 sceneChanger;
     void Start()
     {
+        GameManager.instance.CurrentSceneType = SceneType.OutGame;
         var saveData = SaveSystem.Load();
         selection = saveData.selection;
         for (int i = 0; i < titleButtons.Length; i++)

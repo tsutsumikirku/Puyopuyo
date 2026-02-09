@@ -19,6 +19,7 @@ public class CharacterSelect : MonoBehaviour
     // Update is called once per frame
     void Start()
     {
+        GameManager.instance.CurrentSceneType = SceneType.OutGame;
         playerCharacter = GameManager.instance.playerCharacter;
         player2Character = GameManager.instance.player2Character;
         currentGameMode = GameManager.instance.currentGameMode;
