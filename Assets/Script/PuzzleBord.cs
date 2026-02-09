@@ -685,13 +685,6 @@ public class PuzzleBord : MonoBehaviour
                 break;
             }
             currentChainCount += 1;
-            currentSkillPuyoCount += currentChainCount;
-            if(currentChainCount > skillPuyoCount)
-            {
-                OjamaPuyo();
-                currentSkillPuyoCount = 0;
-            }
-            DOTween.To(() => SkillGuageImage.fillAmount, x => SkillGuageImage.fillAmount = x, (float)currentSkillPuyoCount / skillPuyoCount, 0.3f);
             comboText.text = baseComboText.Replace("num", currentChainCount.ToString());
             tween?.Kill();
             comboText.gameObject.SetActive(true);
@@ -724,6 +717,13 @@ public class PuzzleBord : MonoBehaviour
                 yield return StartCoroutine(BlinkMatches(group));
                 clearedThisChain += ClearMatches(group);
             }
+            currentSkillPuyoCount += clearedThisChain;
+            if (currentSkillPuyoCount > skillPuyoCount)
+            {
+                OjamaPuyo();
+                currentSkillPuyoCount = 0;
+            }
+            DOTween.To(() => SkillGuageImage.fillAmount, x => SkillGuageImage.fillAmount = x, (float)currentSkillPuyoCount / skillPuyoCount, 0.3f);
 
             int scoreToAdd = clearedThisChain * 10 * currentChainCount;
             totalScore += scoreToAdd;
@@ -814,6 +814,48 @@ public class PuzzleBord : MonoBehaviour
 
     private void OjamaPuyo()
     {
+        if (gameOver)
+        {
+            return;
+        }
+
+        PuzzleBord targetBoard = opponentBoard != null ? opponentBoard : this;
+        targetBoard.StartCoroutine(targetBoard.DropOjamaBlockRoutine(2, 6));
+    }
+
+    private System.Collections.IEnumerator DropOjamaBlockRoutine(int rows, int columns)
+    {
+        if (board == null || rows <= 0 || columns <= 0)
+        {
+            yield break;
+        }
+
+        int columnsToFill = Mathf.Min(columns, width);
+        for (int rowIndex = 0; rowIndex < rows; rowIndex++)
+        {
+            for (int x = 0; x < columnsToFill; x++)
+            {
+                int row = FindDropRow(x);
+                if (row < 0)
+                {
+                    SetGameOver("Game Over: no space for garbage puyos.");
+                    yield break;
+                }
+
+                Vector2Int position = new Vector2Int(x, row);
+                Piece piece = CreatePiece(position, PieceType.Ojama);
+                board[x, row] = piece;
+                SetPieceStartAboveBoard(piece, x);
+                ApplyGridPosition(piece, position, fallAnimationDuration, false);
+            }
+        }
+
+        if (fallAnimationDuration > 0f)
+        {
+            yield return new WaitForSeconds(fallAnimationDuration);
+        }
+
+        RefreshAllSprites();
     }
     private int ClearMatches(List<Vector2Int> matches)
     {
