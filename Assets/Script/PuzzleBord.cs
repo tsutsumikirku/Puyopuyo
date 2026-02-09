@@ -110,6 +110,24 @@ public class PuzzleBord : MonoBehaviour
     public System.Action OnGameOver;
     public System.Action<int> OnChainTriggered;
 
+    private string GetSelifText(int chainIndex, int characterIndex, int offset)
+    {
+        if (selifData == null || selifData.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        int rowIndex = Mathf.Clamp(chainIndex * 2 + offset, 0, selifData.Length - 1);
+        string[] row = selifData[rowIndex];
+        if (row == null || row.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        int colIndex = Mathf.Clamp(characterIndex, 0, row.Length - 1);
+        return row[colIndex].Trim();
+    }
+
     private void Start()
     {
         UpdateUISizing();
@@ -729,13 +747,13 @@ public class PuzzleBord : MonoBehaviour
             });
             if (isPlayerOne)
             {
-                selifText.text = selifData[(int)GameManager.instance.playerCharacter][(currentChainCount - 1) * 2];
-                callText.text = selifData[(int)GameManager.instance.player2Character][(currentChainCount - 1) * 2 + 1];
+                selifText.text = GetSelifText(currentChainCount - 1, (int)GameManager.instance.playerCharacter, 0);
+                callText.text = GetSelifText(currentChainCount - 1, (int)GameManager.instance.player2Character, 1);
             }
             else
             {
-                selifText.text = selifData[(int)GameManager.instance.player2Character][(currentChainCount - 1) * 2];
-                callText.text = selifData[(int)GameManager.instance.playerCharacter][(currentChainCount - 1) * 2 + 1];
+                selifText.text = GetSelifText(currentChainCount - 1, (int)GameManager.instance.player2Character, 0);
+                callText.text = GetSelifText(currentChainCount - 1, (int)GameManager.instance.playerCharacter, 1);
             }
             for(int i = 0; i < selifNameSprites.Length; i++)
             {
