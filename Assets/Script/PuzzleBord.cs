@@ -68,6 +68,11 @@ public class PuzzleBord : MonoBehaviour
 
     [Header("Sound Settings")]
     [SerializeField] private AudioClip fallSE;
+    [Header("Skill Settings")]
+    [SerializeField] private Image SkillGuageImage;
+    [SerializeField] private Color[] skillGuageColor;
+    [SerializeField] private int skillPuyoCount = 10;
+    private int currentSkillPuyoCount = 0;
 
     private Piece[,] board;
     private ActivePair activePair;
@@ -680,6 +685,13 @@ public class PuzzleBord : MonoBehaviour
                 break;
             }
             currentChainCount += 1;
+            currentSkillPuyoCount += currentChainCount;
+            if(currentChainCount > skillPuyoCount)
+            {
+                OjamaPuyo();
+                currentSkillPuyoCount = 0;
+            }
+            SkillGuageImage.fillAmount = (float)currentSkillPuyoCount / skillPuyoCount;
             comboText.text = baseComboText.Replace("num", currentChainCount.ToString());
             tween?.Kill();
             comboText.gameObject.SetActive(true);
@@ -800,6 +812,9 @@ public class PuzzleBord : MonoBehaviour
         return Mathf.Max(1, types.Count);
     }
 
+    private void OjamaPuyo()
+    {
+    }
     private int ClearMatches(List<Vector2Int> matches)
     {
         HashSet<Vector2Int> cellsToClear = new HashSet<Vector2Int>();
