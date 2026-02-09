@@ -290,6 +290,9 @@ MonoBehaviour:
   durationToShowComboText: 0.5
   isPlayerOne: 1
   fallSE: {fileID: 8300000, guid: 04986d231f80c44b093d7561c7d05021, type: 3}
+  SkillGuageImage: {fileID: 0}
+  skillGuageColor: []
+  skillPuyoCount: 10
 --- !u!114 &254572883
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -329,7 +332,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2157590616337413777, guid: 13768da808c2afe44ac297e84f0be5e9, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6187945638577266812, guid: 13768da808c2afe44ac297e84f0be5e9, type: 3}
       propertyPath: m_Pivot.x
