@@ -691,7 +691,7 @@ public class PuzzleBord : MonoBehaviour
                 OjamaPuyo();
                 currentSkillPuyoCount = 0;
             }
-            SkillGuageImage.fillAmount = (float)currentSkillPuyoCount / skillPuyoCount;
+            DOTween.To(() => SkillGuageImage.fillAmount, x => SkillGuageImage.fillAmount = x, (float)currentSkillPuyoCount / skillPuyoCount, 0.3f);
             comboText.text = baseComboText.Replace("num", currentChainCount.ToString());
             tween?.Kill();
             comboText.gameObject.SetActive(true);
