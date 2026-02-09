@@ -101,7 +101,7 @@ public class InGame : MonoBehaviour
             gameOverImage.transform.SetAsLastSibling();
             gameOverImage.transform.DOScale(beforeScale3, sizeDuration).SetEase(Ease.OutBack);
             await UniTask.WaitForSeconds(2f);
-            sceneChanger.ChangeSceneAsync("Result").Forget();
+            PlayerOneWinImage.gameObject.SetActive(true);
             return;
         }
         var beforeScale2 = WinImage[1].transform.localScale;
