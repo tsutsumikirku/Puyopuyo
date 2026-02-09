@@ -26,6 +26,8 @@ public class InGame : MonoBehaviour
     [SerializeField] Image[] LoseImage;
     [SerializeField] private AudioClip gameEnd;
     [SerializeField] private SceneChanger1 sceneChanger;
+    [SerializeField] private Image PlayerOneWinImage;
+    [SerializeField] private Image PlayerTwoWinImage;
     async UniTask Start()
     {
         GameManager.instance.CurrentSceneType = SceneType.Stop;
@@ -111,7 +113,9 @@ public class InGame : MonoBehaviour
         LoseImage[0].gameObject.SetActive(true);
         LoseImage[0].transform.DOScale(beforeScale, sizeDuration).SetEase(Ease.OutBack);
         await UniTask.WaitForSeconds(2f);
-        sceneChanger.ChangeSceneAsync("Result").Forget();
+        
+        PlayerTwoWinImage.gameObject.SetActive(true);
+
     }
     private async Task PlayerTwoGameOver()
     {
@@ -135,6 +139,6 @@ public class InGame : MonoBehaviour
         LoseImage[1].gameObject.SetActive(true);
         LoseImage[1].transform.DOScale(beforeScale, sizeDuration).SetEase(Ease.OutBack);
         await UniTask.WaitForSeconds(2f);
-        sceneChanger.ChangeSceneAsync("Result").Forget();
+        PlayerOneWinImage.gameObject.SetActive(true);
     }
 }
