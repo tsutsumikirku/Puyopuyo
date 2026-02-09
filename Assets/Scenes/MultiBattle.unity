@@ -1066,7 +1066,8 @@ MonoBehaviour:
   landingBounceScale: {x: 1.1, y: 0.9, z: 1}
   clearBlinkDuration: 0.3
   clearBlinkInterval: 0.08
-  garbageDropDelay: 0.2
+  garbageDropDelay: 0.5
+  garbageSendMultiplier: 0.5
   clearEffectPrefab: {fileID: 7245309023116421309, guid: f10dd85c6e67fca4091ae3f960893e7a, type: 3}
   opponentBoard: {fileID: 1210165015}
   frameSprite: {fileID: -263907133, guid: 03f6fe9c94294d34d90ca5900548820a, type: 3}
@@ -1123,7 +1124,7 @@ MonoBehaviour:
   - {r: 0.5882353, g: 0.28235295, b: 0.21568628, a: 1}
   - {r: 0.9098039, g: 0.53333336, b: 0.73333335, a: 1}
   - {r: 0.38431373, g: 0.74509805, b: 0.7607843, a: 1}
-  skillPuyoCount: 10
+  skillPuyoCount: 40
   SelifDataPath: SelifData
   selifImage: {fileID: 1258360101}
   selifNameSprites:
@@ -5304,7 +5305,8 @@ MonoBehaviour:
   landingBounceScale: {x: 1.1, y: 0.9, z: 1}
   clearBlinkDuration: 0.3
   clearBlinkInterval: 0.08
-  garbageDropDelay: 0.2
+  garbageDropDelay: 0.5
+  garbageSendMultiplier: 0.5
   clearEffectPrefab: {fileID: 7245309023116421309, guid: f10dd85c6e67fca4091ae3f960893e7a, type: 3}
   opponentBoard: {fileID: 254572882}
   frameSprite: {fileID: 0}
@@ -5329,7 +5331,7 @@ MonoBehaviour:
   - {r: 0.5882353, g: 0.28235295, b: 0.21568628, a: 1}
   - {r: 0.9098039, g: 0.53333336, b: 0.73333335, a: 1}
   - {r: 0.38431373, g: 0.74509805, b: 0.7607843, a: 1}
-  skillPuyoCount: 10
+  skillPuyoCount: 40
   SelifDataPath: SelifData
   selifImage: {fileID: 1631782452}
   selifNameSprites:
