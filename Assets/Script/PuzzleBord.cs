@@ -685,13 +685,6 @@ public class PuzzleBord : MonoBehaviour
                 break;
             }
             currentChainCount += 1;
-            currentSkillPuyoCount += currentChainCount;
-            if(currentChainCount > skillPuyoCount)
-            {
-                OjamaPuyo();
-                currentSkillPuyoCount = 0;
-            }
-            DOTween.To(() => SkillGuageImage.fillAmount, x => SkillGuageImage.fillAmount = x, (float)currentSkillPuyoCount / skillPuyoCount, 0.3f);
             comboText.text = baseComboText.Replace("num", currentChainCount.ToString());
             tween?.Kill();
             comboText.gameObject.SetActive(true);
@@ -724,6 +717,13 @@ public class PuzzleBord : MonoBehaviour
                 yield return StartCoroutine(BlinkMatches(group));
                 clearedThisChain += ClearMatches(group);
             }
+            currentSkillPuyoCount += clearedThisChain;
+            if (currentSkillPuyoCount > skillPuyoCount)
+            {
+                OjamaPuyo();
+                currentSkillPuyoCount = 0;
+            }
+            DOTween.To(() => SkillGuageImage.fillAmount, x => SkillGuageImage.fillAmount = x, (float)currentSkillPuyoCount / skillPuyoCount, 0.3f);
 
             int scoreToAdd = clearedThisChain * 10 * currentChainCount;
             totalScore += scoreToAdd;
