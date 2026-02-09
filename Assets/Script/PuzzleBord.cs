@@ -72,7 +72,19 @@ public class PuzzleBord : MonoBehaviour
     [SerializeField] private Image SkillGuageImage;
     [SerializeField] private Color[] skillGuageColor;
     [SerializeField] private int skillPuyoCount = 10;
+    [SerializeField] private string[][] selifData;
+    [Header("SelifDatas")]
+    [SerializeField] private string SelifDataPath;
+    [SerializeField] private Image selifImage;
+    [SerializeField] private Image[] selifNameSprites;
+    [SerializeField] private TextMeshProUGUI selifText;
+    [SerializeField] private Image callImage;
+    [SerializeField] private TextMeshProUGUI callText;
     private int currentSkillPuyoCount = 0;
+    private Vector2 defaultSelifScale;
+    private Vector2 defaultCallScale;
+    Tween selifTween;
+    Tween callTween;
 
     private Piece[,] board;
     private ActivePair activePair;
@@ -102,6 +114,12 @@ public class PuzzleBord : MonoBehaviour
         UpdateUISizing();
         baseComboText = comboText.text;
         beforeScale = comboText.transform.localScale;
+        if (SelifDataPath != "")
+        {
+            selifData = Resources.Load<TextAsset>(SelifDataPath).text.Split('\n').Select(line => line.Split(',')).ToArray();
+        }
+        defaultSelifScale = selifImage.transform.localScale;
+        defaultCallScale = callImage.transform.localScale;
     }
 
     private void Update()
@@ -686,6 +704,54 @@ public class PuzzleBord : MonoBehaviour
             }
             currentChainCount += 1;
             comboText.text = baseComboText.Replace("num", currentChainCount.ToString());
+            selifImage.gameObject.SetActive(true);
+            selifImage.transform.localScale = Vector3.zero;
+            selifTween?.Kill();
+            selifTween = selifImage.transform.DOScale(defaultSelifScale, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
+            {
+                callImage.gameObject.SetActive(true);
+                    callImage.transform.localScale = Vector3.zero;
+                    callTween?.Kill();
+                    callTween = callImage.transform.DOScale(defaultCallScale, 0.3f).SetEase(Ease.OutBack).OnComplete(() =>
+                    {
+                        callImage.transform.DOScale(Vector2.zero, 0.3f).SetEase(Ease.InBack).SetDelay(0.7f).OnComplete(() =>
+                        {
+                            callImage.gameObject.SetActive(false);
+                        });
+                    });
+                selifImage.transform.DOScale(Vector2.zero, 0.3f).SetEase(Ease.InBack).SetDelay(1f).OnComplete(() =>
+                {
+                    selifImage.gameObject.SetActive(false);
+                    // selif の表示が完全に終わってから call を開始する
+                    
+                });
+            });
+            if (isPlayerOne)
+            {
+                selifText.text = selifData[(int)GameManager.instance.playerCharacter][(currentChainCount - 1) * 2];
+                callText.text = selifData[(int)GameManager.instance.player2Character][(currentChainCount - 1) * 2 + 1];
+            }
+            else
+            {
+                selifText.text = selifData[(int)GameManager.instance.player2Character][(currentChainCount - 1) * 2];
+                callText.text = selifData[(int)GameManager.instance.playerCharacter][(currentChainCount - 1) * 2 + 1];
+            }
+            for(int i = 0; i < selifNameSprites.Length; i++)
+            {
+                if(i == (int)GameManager.instance.playerCharacter && isPlayerOne)
+                {
+                    selifNameSprites[i].enabled = true;
+                }
+                else if(i == (int)GameManager.instance.player2Character && !isPlayerOne)
+                {
+                    selifNameSprites[i].enabled = true;
+                }
+                else
+                {
+                    selifNameSprites[i].enabled = false;
+                }
+            }
+            
             tween?.Kill();
             comboText.gameObject.SetActive(true);
             comboText.transform.SetAsLastSibling();
@@ -718,7 +784,7 @@ public class PuzzleBord : MonoBehaviour
                 clearedThisChain += ClearMatches(group);
             }
             currentSkillPuyoCount += clearedThisChain;
-            if (currentSkillPuyoCount > skillPuyoCount)
+            if (currentSkillPuyoCount > skillPuyoCount && GameManager.instance.currentGameMode == GameMode.Versus)
             {
                 OjamaPuyo();
                 currentSkillPuyoCount = 0;

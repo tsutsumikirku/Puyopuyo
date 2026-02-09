@@ -10,6 +10,8 @@ public class Result : MonoBehaviour
     [SerializeField] private TextMeshProUGUI Player1Text;
     [SerializeField] private TextMeshProUGUI Player2Text;
     [SerializeField] private TitleButton[] titleButton;
+    [SerializeField] private bool isPlayerOne = true;
+    [SerializeField] private Image[] PlayerWinImage;
     int selectionButton = 0;
     void Start()
     {
@@ -31,9 +33,18 @@ public class Result : MonoBehaviour
                 titleButton[i].Unselect();
             }
         }
+        
     }
     void Update()
     {
+        if (isPlayerOne)
+        {
+            PlayerWinImage[(int)GameManager.instance.playerCharacter].gameObject.SetActive(true);
+        }
+        else
+        {
+            PlayerWinImage[(int)GameManager.instance.player2Character].gameObject.SetActive(true);
+        }
         if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow))
         {
             selectionButton++;

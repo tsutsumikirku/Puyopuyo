@@ -8887,6 +8887,7 @@ MonoBehaviour:
   playerTwoScore: 0
   playerOneCombo: 0
   playerTwoCombo: 0
+  sadawd: 0
   InGameBGM: {fileID: 8300000, guid: e42e7911c90f060498a658a332001269, type: 3}
   OutGameBGM: {fileID: 8300000, guid: 9eb2b30fc14a3064b87e07f1638cf3c9, type: 3}
 --- !u!4 &1871189274
